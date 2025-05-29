@@ -1,0 +1,3 @@
+# Hashes of file build rules.
+a86f473356d0c09b2347eea55f93621c CMakeFiles/bootloader
+9bf9d5b979181e6ed29a6e02c370215b main.bin

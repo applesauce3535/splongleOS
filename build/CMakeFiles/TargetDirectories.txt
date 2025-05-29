@@ -1,0 +1,3 @@
+/home/splongle/Desktop/projects/muh_os/splongle_os/build/CMakeFiles/bootloader.dir
+/home/splongle/Desktop/projects/muh_os/splongle_os/build/CMakeFiles/edit_cache.dir
+/home/splongle/Desktop/projects/muh_os/splongle_os/build/CMakeFiles/rebuild_cache.dir
