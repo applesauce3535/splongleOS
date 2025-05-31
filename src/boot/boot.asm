@@ -39,7 +39,7 @@ bdb_large_sectors:          dd 0
 
 ; extended boot sector
 ; drive number, 0 for floppy disc
-ebr_drive_sector:           db 0
+ebr_drive_number:           db 0
                             db 0 ; just a reserved byte set to 0
 ; signature
 ebr_signature:              db 29h ; must be 29 or 28 in hex
@@ -96,15 +96,136 @@ main:
     mov sp, 0x7C00  ; stack grows downwards starting at address 0x7C00
                     ; stack starts at the beginning of the OS, because it would overwrite the OS if it started at the end
 
+    ; read something from floppy disk
+    ; BIOS should set dl to drive number
+    mov [ebr_drive_number], dl
+
+    mov ax, 1           ; LBA=1, second sector of disk
+    mov cl, 1           ; 1 sector to read
+    mov bx, 0x7E00      ; data starts after bootloader
+    call disk_read
+
     mov si, msg_hello   ; set si to start of the string
     call puts
-
+    cli                 ; disable interrupts so CPU can't exit halt state
     hlt
 
+;
+; error handlers
+;
+
+floppy_error:
+    mov si, msg_read_failed
+    call puts
+    jmp wait_key_and_reboot
+
+wait_key_and_reboot:
+    mov ah, 0
+    int 16h             ; wait for keypress
+    jmp 0FFFFh:0        ; jump to beginning of BIOS
+
 .halt:
-    jmp .halt
+    cli                 ; disable interrupts so CPU can't exit halt state
+    hlt
+
+;
+; disk routines
+;
+
+;
+; converts a logical block addressing (LBA) address to a cylinder head sector (CHS) address
+; parameters:
+;   - ax: LBA address
+; returns:
+;   - cx [bits 0-5]: sector number
+;   - cx [bits 6-15]: cylinder
+;   - dh: head
+;   this is exactly how the BIOS expects this to be stored
+lba_to_chs:
+    push ax                             ; save ax
+    push dx                             ; save dl
+    xor dx, dx                          ; dx = 0
+    div word [bdb_sectors_per_track]    ; ax = LBA / SectorsPerTrack
+                                        ; dx = LBA % SectorsPerTrack
+    inc dx                              ; dx = (LBA % SectorsPerTrack + 1) = sector
+    mov cx, dx                          ; cx = sector
+
+    xor dx, dx
+    div word [bdb_head]                 ; ax = (LBA / SectorsPerTrack) / heads = cylinder
+                                        ; dx = (LBA / SectorsPerTrack) % heads = head
+    mov dh, dl                          ; dh = head, dl is lower 8 bits of dx
+    mov ch, al                          ; ch = cylinder (lower 8 bits), fills bits 8-15
+    shl ah, 6
+    or cl, ah                           ; fils bits 6-7 in cl for cylinder, cl bits 5-0 already contains sector
+    pop ax  
+    mov dl, al                          ; restore dl
+    pop ax                              ; restore ax
+    ret
+
+;
+; reads sectors from a disk
+; parameters:
+;   - ax: LBA address
+;   - cl: number of sectors to read (up to 128)
+;   - dl: drive number
+;   - es:bx: memory address where to store read data
+;
+disk_read:
+    push ax                             ; save registers we will modify
+    push bx
+    push cx
+    push dx
+    push di
+
+
+    push cx                             ; save cl (number of sectors to read)
+    call lba_to_chs
+    pop ax                              ; al = number of sectors to read
+
+    mov ah, 02h
+    mov di, 3                           ; retry count
+.retry:
+    pusha                               ; save all registers because we don't know what BIOS is gonna do
+    stc                                 ; manually set carry flag, some BIOS don't do this
+    int 13h                             ; carry flag cleared = success
+    jnc .done                           ; jump !C
+
+    ; read failed
+    popa
+    call disk_reset
+
+    dec di
+    test di, di
+    jnz .retry                          ; jump !Z, 3 attempts
+
+.fail:
+    ; all attempts failed
+    jmp floppy_error
+.done:
+    popa
+
+    pop di                             ; restore registers modified
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+
+;
+; resets disk controller
+; parameters:
+;   - dl: drive number
+disk_reset:
+    pusha 
+    mov ah, 0
+    stc
+    int 13h
+    jc floppy_error
+    popa
+    ret
 
 msg_hello: db 'Hello, world? Hello, bitch. This is splongleOS.', ENDL, 0
+msg_read_failed: db 'Read fail: Failure to read from floppy disk.', ENDL, 0
 
 ; fill the rest of the boot sector with 0s up to 510 bytes
 times 510-($-$$) db 0   ; $ = memory offset of current line
