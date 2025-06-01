@@ -16,12 +16,12 @@ bdb_oem:                    db 'MSWIN4.1'   ; 8 bytes
 bdb_bytes_per_sector:       dw 512
 ; indicate sectors per cluster
 bdb_sectors_per_cluster:    db 1
-; indicates number of reserved sectors
+; indicates number of reserved sectors, just 1 for boot sector
 bdb_reserved_sectors:       dw 1
 ; FAT's on storage, often 2
 bdb_fat_count:              db 2
 ; number of directory entries
-bdb_dir_entries_count:      dw 0E0h ; 
+bdb_dir_entries_count:      dw 0E0h 
 ; total sectors, 512 bytes * 2880 bytes = 1.4MB
 bdb_total_sectors:          dw 2880
 ; media descriptor, F0 indicates 3.5" floppy disc
