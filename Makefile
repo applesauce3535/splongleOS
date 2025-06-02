@@ -19,6 +19,7 @@ $(BUILD_DIR)/splongleOS.img: bootloader kernel
 	mkfs.fat -F 12 -n "NBOS" $(BUILD_DIR)/splongleOS.img 
 	dd if=$(BUILD_DIR)/bootloader.bin of=$(BUILD_DIR)/splongleOS.img conv=notrunc
 	mcopy -i $(BUILD_DIR)/splongleOS.img $(BUILD_DIR)/kernel.bin "::kernel.bin" 
+	mcopy -i $(BUILD_DIR)/splongleOS.img test.txt "::test.txt" 
 
 #
 # bootloader
@@ -40,7 +41,7 @@ $(BUILD_DIR)/kernel.bin: always
 tools_fat: $(BUILD_DIR)/tools/fat
 $(BUILD_DIR)/tools/fat: always $(TOOLS_DIR)/fat/fat.c
 	mkdir -p $(BUILD_DIR)/tools
-	$(CC) -g -o $(BUILD_DIR)/tools/fat
+	$(CC) -g -o $(BUILD_DIR)/tools/fat $(TOOLS_DIR)/fat/fat.c
 
 #
 # always
