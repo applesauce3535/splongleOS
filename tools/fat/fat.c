@@ -3,6 +3,7 @@
 #include "stdbool.h"
 #include "string.h"
 #include "stdlib.h"
+#include "ctype.h"
 
 // reminder: lba = logical block address
 
@@ -123,14 +124,23 @@ bool readFile(DirectoryEntry* fileEntry, FILE* disk, uint8_t* outputBuffer) {
     do {
         // formula for converting from cluster to a sector
         uint32_t lba = g_RootDirectoryEnd + (currentCluster - 2) * g_BootSector.SectorsPerCluster;
+        // read 1 cluster using readSectors()
         ok = ok && readSectors(disk, lba, g_BootSector.SectorsPerCluster, outputBuffer);
+        // advance output buffer position, it's just how many bytes it's moving forward
         outputBuffer += g_BootSector.SectorsPerCluster * g_BootSector.BytesPerSector;
         
+        // formula for getting next cluster index in the FAT
         uint32_t fatIndex = currentCluster * 3 / 2;
+        // if the current cluster is even, take the bottom 12 bits
         if(currentCluster % 2 == 0) {
-            currentCluster = 
+            // converts the uint8* from g_FAT into uint16* and then dereferences that
+            currentCluster = (*(uint16_t*)(g_FAT + fatIndex)) & 0x0FFF; // bit mask to remove upper bits
         }
-    } while(ok);
+        // if the current cluster is odd, take the top 12 bits
+        else {
+            currentCluster = (*(uint16_t*)(g_FAT + fatIndex)) >> 4; // shift by 4 bits
+        }
+    } while(ok && currentCluster < 0x0FF8);
     return ok;
 }
 
@@ -179,7 +189,28 @@ int main(int argc, char** argv) {
         return -5;
     }
 
+    // extra sector to avoid overwriting anything or segment faulting
+    uint8_t* buffer = (uint8_t*) malloc(fileEntry->Size + g_BootSector.BytesPerSector);
+    if(!readFile(fileEntry, disk, buffer)) {
+        fprintf(stderr, "Could not read file %s on disk\n", argv[2]);
+        free(g_FAT);
+        free(g_RootDirectory);
+        free(buffer);
+        return -6;
+    }
+
+    for (size_t i = 0; i < fileEntry->Size; ++i) {
+        if (isprint(buffer[i])) {
+            fputc(buffer[i], stdout);
+        }
+        else {
+            printf("<%02x>", buffer[i]);
+        }
+    }
+    printf("\n");
+
     free(g_RootDirectory);
     free(g_FAT);
+    free(buffer);
     return 0;
 }
