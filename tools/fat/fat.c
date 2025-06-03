@@ -5,7 +5,6 @@
 #include "stdlib.h"
 #include "ctype.h"
 
-// reminder: lba = logical block address
 
 typedef struct {
     // FAT info
@@ -191,6 +190,7 @@ int main(int argc, char** argv) {
 
     // extra sector to avoid overwriting anything or segment faulting
     uint8_t* buffer = (uint8_t*) malloc(fileEntry->Size + g_BootSector.BytesPerSector);
+    // error message if file could not be read
     if(!readFile(fileEntry, disk, buffer)) {
         fprintf(stderr, "Could not read file %s on disk\n", argv[2]);
         free(g_FAT);

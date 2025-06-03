@@ -1,12 +1,16 @@
-org 0x7C00  ; BIOS loads boot sector to 0x7C00
+org 0x0  
 bits 16     ; tells assembler to emit 16 bit code
 
 ; macro for new line chara in hex
 %define ENDL 0x0D, 0x0A  
 
 start:
-    jmp main    ; sets main as the entry point to the program
+    mov si, msg_hello   ; set si to start of the string
+    call puts
 
+.halt:
+    cli
+    hlt
 ;
 ; prints a string to the screen
 ; params:
@@ -37,31 +41,4 @@ puts:
     pop si 
     ret 
 
-main:
-    ; setup data segments
-    mov ax, 0   ; can't write to ds/es directly
-    mov ds, ax  ; ds: points to string data to be copied to es
-    mov es, ax  ; es: points to destination for string copy
-
-    ; setup stack
-    mov ss, ax  ; stack segment starts at 0
-    mov sp, 0x7C00  ; stack grows downwards starting at address 0x7C00
-                    ; stack starts at the beginning of the OS, because it would overwrite the OS if it started at the end
-
-    mov si, msg_hello   ; set si to start of the string
-    call puts
-
-    hlt
-
-.halt:
-    jmp .halt
-
-msg_hello: db 'Hello, world? Hello, bitch. This is splongleOS.', ENDL, 0
-
-; fill the rest of the boot sector with 0s up to 510 bytes
-times 510-($-$$) db 0   ; $ = memory offset of current line
-                        ; $$ = memory offset of the beginning of the current section
-                        ; so $ - $$ gives the whole size of the program measured in bytes
-
-; boot signature
-dw 0xAA55
+msg_hello: db 'Hello, world? Hello, bitch. This is splongleOS, and this is the kernel.', ENDL, 0
