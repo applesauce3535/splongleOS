@@ -1,7 +1,7 @@
 org 0x0  
 bits 16     ; tells assembler to emit 16 bit code
 
-; macro for new line chara in hex
+; macro for new line char in hex
 %define ENDL 0x0D, 0x0A  
 
 start:

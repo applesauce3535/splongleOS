@@ -1,0 +1,105 @@
+Open Watcom Linker Version 2.0 beta Mar  1 2025 02:31:23 (32-bit)
+Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
+Created on:       25/06/15 15:29:15
+Executable Image: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2.bin
+creating a RAW Binary Image executable
+
+
+                        +------------+
+                        |   Groups   |
+                        +------------+
+
+Group                           Address              Size
+=====                           =======              ====
+
+DGROUP                          00000788             00000096
+
+
+
+                        +--------------+
+                        |   Segments   |
+                        +--------------+
+
+Segment                Class          Group          Address         Size
+=======                =====          =====          =======         ====
+
+_ENTRY                 CODE           AUTO           00000000        00000013
+_TEXT                  CODE           AUTO           00000013        00000774
+CONST                  DATA           DGROUP         00000788        00000084
+CONST2                 DATA           DGROUP         0000080c        00000011
+_DATA                  DATA           DGROUP         0000081e        00000000
+_TEXT                                 AUTO           0000081e        000000f8
+
+
+                        +----------------+
+                        |   Memory Map   |
+                        +----------------+
+
+* = unreferenced symbol
++ = symbol only referenced locally
+
+Address        Symbol
+=======        ======
+
+Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/asm/stage2.obj(stage2.asm)
+00000000       entry
+Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/asm/x86.obj(x86.asm)
+0000081e       __U4D
+00000845       _x86_div64_32
+00000873       _x86_Video_WriteCharTeletype
+00000886       _x86_Disk_Reset
+0000089b       _x86_Disk_Read
+000008d2       _x86_Disk_getDriveParams
+Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/c/disk.obj(/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/disk.c)
+00000013+      DISK_initialize_
+00000087+      DISK_LBA2CHS_
+0000013a+      DISK_readSectors_
+Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/c/main.obj(/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/main.c)
+000001d4       _cstart
+Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/c/stdio.obj(/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/stdio.c)
+00000257+      putc_
+0000027e       puts_
+000002b5       _printf
+00000513+      printf_number_
+0000080c+      _g_HexChars
+
+
+                        +---------------------+
+                        |   Module Segments   |
+                        +---------------------+
+
+! = 32-bit segment
+c = initialized communal data
+
+Module          Segment               Class           Address         Size
+======          =======               =====           =======         ====
+
+stage2.asm      _ENTRY                CODE           00000000         00000013
+x86.asm         _TEXT                                0000081e         000000f8
+/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/disk.c
+                _TEXT                 CODE           00000013         000001c1
+                CONST                 DATA           00000788         00000000
+                CONST2                DATA           0000080c         00000000
+                _DATA                 DATA           0000081e         00000000
+/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/main.c
+                _TEXT                 CODE           000001d4         00000083
+                CONST                 DATA           00000788         00000084
+                CONST2                DATA           0000080c         00000000
+                _DATA                 DATA           0000081e         00000000
+/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/stdio.c
+                _TEXT                 CODE           00000257         00000530
+                CONST                 DATA           0000080c         00000000
+                CONST2                DATA           0000080c         00000011
+                _DATA                 DATA           0000081e         00000000
+Warning! W1014: stack segment not found
+
+
+                        +-----------------------+
+                        |   Linker Statistics   |
+                        +-----------------------+
+
+Stack size:  0200 (512.)
+Memory size:  0916 (2326.)
+Entry point address: 00000000
+Link time: 00:00.00

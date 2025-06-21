@@ -118,13 +118,13 @@ start:
     mov bx, buffer                      ; es:bx = buffer (where its gonna be read to)
     call disk_read
 
-    ; search for kernel.bin
+    ; search for stage2.bin
     xor bx, bx                          ; bx = how many entries checked
     mov di, buffer                      ; di = current dir entry
 
 ; beginning of loop
-.search_kernel:
-    mov si, file_kernel_bin             ; kernel file we want
+.search_stage2:
+    mov si, file_stage2_bin             ; stage2 file we want
     mov cx, 11                          ; file name length is 11
     push di
     ; easy instruction for comparing two strings
@@ -132,40 +132,40 @@ start:
     ; cmpsb: compare two bytes in memory to eachother
     repe cmpsb 
     pop di
-    je .found_kernel                    ; signifies kernel was found
-    add di, 32                          ; if kernel wasn't found, add 32 to di (size of dir entry)
+    je .found_stage2                    ; signifies stage2 was found
+    add di, 32                          ; if stage2 wasn't found, add 32 to di (size of dir entry)
     inc bx
     cmp bx, [bdb_dir_entries_count]
-    jl .search_kernel
-    jmp kernel_not_found_error
+    jl .search_stage2
+    jmp stage2_not_found_error
 
-.found_kernel:
+.found_stage2:
     ; di should have the address to the entry
     mov ax, [di + 26]                   ; first logical cluster field (offset 26)
-    mov [kernel_cluster], ax
+    mov [stage2_cluster], ax
     ; load FAT from disk
     mov ax, [bdb_reserved_sectors]
     mov bx, buffer
     mov cl, [bdb_sectors_per_fat]
     mov dl, [ebr_drive_number]
     call disk_read
-    ; read kernel and process FAT chain
-    mov bx, KERNEL_LOAD_SEGMENT
+    ; read stage2 and process FAT chain
+    mov bx, STAGE2_LOAD_SEGMENT
     mov es, bx
-    mov bx, KERNEL_LOAD_OFFSET
+    mov bx, STAGE2_LOAD_OFFSET
 
-.load_kernel_loop:
+.load_stage2_loop:
     ; read next cluster
-    mov ax, [kernel_cluster]
+    mov ax, [stage2_cluster]
     ; hardcoded value specifically for 1.44MB floppy, needs to be changed for other storage mediums
-    add ax, 31                          ; first cluster = (kernel cluster - 2) * sectors per cluster + start sector
+    add ax, 31                          ; first cluster = (stage2 cluster - 2) * sectors per cluster + start sector
 
     mov cl, 1
     mov dl, [ebr_drive_number]
     call disk_read
     add bx, [bdb_bytes_per_sector]
     ; compute loc of next sector
-    mov ax, [kernel_cluster]
+    mov ax, [stage2_cluster]
     mov cx, 3
     mul cx
     mov cx, 2
@@ -187,18 +187,18 @@ start:
     cmp ax, 0x0FF8                      ; end of FAT chain
     jae .read_finish                    ; jump if above or equal to end of chain
 
-    mov [kernel_cluster], ax
-    jmp .load_kernel_loop
+    mov [stage2_cluster], ax
+    jmp .load_stage2_loop
 
 .read_finish:
-    ; jump to kernel
+    ; jump to stage2
     mov dl, [ebr_drive_number]          ; boot device in dl
 
-    mov ax, KERNEL_LOAD_SEGMENT         ; set segment registers
+    mov ax, STAGE2_LOAD_SEGMENT         ; set segment registers
     mov ds, ax
     mov es, ax
     
-    jmp KERNEL_LOAD_SEGMENT:KERNEL_LOAD_OFFSET
+    jmp STAGE2_LOAD_SEGMENT:STAGE2_LOAD_OFFSET
 
     jmp wait_key_and_reboot             ; hopefully shouldn't happen
 
@@ -210,8 +210,8 @@ start:
 ; error handlers
 ;
 
-kernel_not_found_error:
-    mov si, msg_kernel_not_found
+stage2_not_found_error:
+    mov si, msg_stage2_not_found
     call puts
     jmp wait_key_and_reboot
 
@@ -357,12 +357,12 @@ disk_reset:
 
 msg_loading: db 'Loading...', ENDL, 0
 msg_read_failed: db 'Disk read error.', ENDL, 0
-file_kernel_bin: db 'KERNEL  BIN'
-msg_kernel_not_found: db 'Kernel not found.', ENDL, 0
-kernel_cluster: dw 0
+file_stage2_bin: db 'STAGE2  BIN'
+msg_stage2_not_found: db 'stage2 not found.', ENDL, 0
+stage2_cluster: dw 0
 
-KERNEL_LOAD_SEGMENT equ 0x2000
-KERNEL_LOAD_OFFSET equ 0
+STAGE2_LOAD_SEGMENT equ 0x2000
+STAGE2_LOAD_OFFSET equ 0
 
 
 ; fill the rest of the boot sector with 0s up to 510 bytes
