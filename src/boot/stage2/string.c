@@ -1,7 +1,12 @@
 #include "string.h"
 #include "stdint.h"
 
-// takes a string and character as input, returns the first matching instance
+/*
+takes a string and character as input, returns pointer to the first matching instance
+
+str - input string
+chr - character to match in the input string
+*/
 const char* strchr(const char* str, char chr) {
     if (str == NULL) {
         return NULL;
@@ -15,7 +20,12 @@ const char* strchr(const char* str, char chr) {
     return NULL;
 }
 
-// copies a string from one buffer to another, takes in destination and source
+/*
+copies a string from one buffer to another, takes in destination and source
+
+dst - character buffer of destination
+src - character buffer of source string
+*/
 char* strcpy(char* dst, const char* src) {
     char* origDst = dst;    // points to beginning of destination
 
@@ -36,3 +46,16 @@ char* strcpy(char* dst, const char* src) {
     return origDst;
 }
 
+/*
+returns the number of characters in a string
+
+str - string to count the characters in
+*/
+unsigned strlen(const char* str) {
+    unsigned len = 0;
+    while (*str) {
+        ++len;
+        ++str;
+    }
+    return len;
+}

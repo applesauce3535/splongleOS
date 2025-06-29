@@ -7,9 +7,13 @@ SRC_DIR=src
 TOOLS_DIR=tools
 BUILD_DIR=build
 
+include build_scripts/config.mk
+
 .PHONY: all floppy_image kernel bootloader clean always tools_fat
 
 all: floppy_image tools_fat
+
+include build_scripts/toolchain.mk
 
 #
 # floppy image
@@ -23,6 +27,9 @@ $(BUILD_DIR)/splongleOS.img: bootloader kernel
 	mcopy -i $(BUILD_DIR)/splongleOS.img $(BUILD_DIR)/stage2.bin "::stage2.bin" 
 	mcopy -i $(BUILD_DIR)/splongleOS.img $(BUILD_DIR)/kernel.bin "::kernel.bin" 
 	mcopy -i $(BUILD_DIR)/splongleOS.img test.txt "::test.txt" 
+	mmd -i $(BUILD_DIR)/splongleOS.img "::bitch"
+	mcopy -i $(BUILD_DIR)/splongleOS.img test.txt "::bitch/test.txt" 
+
 
 #
 # bootloader

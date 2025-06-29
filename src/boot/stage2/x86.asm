@@ -3,6 +3,27 @@ bits 16
 section _TEXT
 
 ;
+; U4M
+; unsigned 4 byte multiplication
+; params:   dx:ax integer 1
+;           cx:bx integer 2
+; returns:  dx:ax product
+;
+global __U4M
+__U4M:
+    shl edx, 16     ; dx to upper half of ed
+    mov dx, ax      ; int 1 in edx
+    mov eax, edx    ; int 1 in eax
+
+    shl ecx, 16     ; cx to upper hald of ecx
+    mov cx, bx      ; int 2 in ecx
+
+    mul ecx         ; result in edx:eax (we only need eax)
+    mov edx, eax    ; move upper half to dx
+    shr edx, 16
+    ret
+
+;
 ; U4D
 ; unsigned 4 byte divide
 ; params:   dx:ax dividend

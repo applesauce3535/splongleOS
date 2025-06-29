@@ -1,10 +1,20 @@
 #include "stdio.h"
 #include "x86.h"
 
+/*
+writes a character to the output hardware
+
+c - character to output
+*/
 void putc(char c) {
     x86_Video_WriteCharTeletype(c, 0);
 }
 
+/*
+writes a string to the output hardware
+
+str - string to output
+*/
 void puts(const char* str) {
     while(*str) {
         putc(*str);
@@ -25,6 +35,12 @@ void puts(const char* str) {
 
 int* printf_number(int* argp, int length, bool sign, int radix);
 
+/*
+writes a formatted string to the output hardware
+
+fmt - string containing format specifications
+all formatted parameters follow the string section
+*/
 void _cdecl printf(const char* fmt, ...) {
     int state = PRINTF_STATE_NORMAL;
     int length = PRINTF_LENGTH_DEFAULT;
@@ -138,6 +154,14 @@ void _cdecl printf(const char* fmt, ...) {
 
 const char g_HexChars[] = "0123456789abcdef";
 
+/*
+formats a number to a formatted string
+
+argp - number to format
+length - length of number in bits
+sign - determines if the number is signed or not
+radix - base number system used for number
+*/
 int* printf_number(int* argp, int length, bool sign, int radix) {
     char buffer[32];
     unsigned long long number;

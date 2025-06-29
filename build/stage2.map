@@ -1,7 +1,7 @@
 Open Watcom Linker Version 2.0 beta Mar  1 2025 02:31:23 (32-bit)
 Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       25/06/15 15:29:15
+Created on:       25/06/22 22:29:11
 Executable Image: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2.bin
 creating a RAW Binary Image executable
 
@@ -13,7 +13,7 @@ creating a RAW Binary Image executable
 Group                           Address              Size
 =====                           =======              ====
 
-DGROUP                          00000788             00000096
+DGROUP                          00001816             00000288
 
 
 
@@ -25,11 +25,12 @@ Segment                Class          Group          Address         Size
 =======                =====          =====          =======         ====
 
 _ENTRY                 CODE           AUTO           00000000        00000013
-_TEXT                  CODE           AUTO           00000013        00000774
-CONST                  DATA           DGROUP         00000788        00000084
-CONST2                 DATA           DGROUP         0000080c        00000011
-_DATA                  DATA           DGROUP         0000081e        00000000
-_TEXT                                 AUTO           0000081e        000000f8
+_TEXT                  CODE           AUTO           00000013        00001802
+CONST                  DATA           DGROUP         00001816        00000157
+CONST2                 DATA           DGROUP         0000196e        00000011
+_DATA                  DATA           DGROUP         00001980        00000004
+_TEXT                                 AUTO           00001984        00000112
+_BSS                   BSS            DGROUP         00001a96        00000008
 
 
                         +----------------+
@@ -45,24 +46,50 @@ Address        Symbol
 Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/asm/stage2.obj(stage2.asm)
 00000000       entry
 Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/asm/x86.obj(x86.asm)
-0000081e       __U4D
-00000845       _x86_div64_32
-00000873       _x86_Video_WriteCharTeletype
-00000886       _x86_Disk_Reset
-0000089b       _x86_Disk_Read
-000008d2       _x86_Disk_getDriveParams
+00001984       __U4M
+0000199e       __U4D
+000019c5       _x86_div64_32
+000019f3       _x86_Video_WriteCharTeletype
+00001a06       _x86_Disk_Reset
+00001a1b       _x86_Disk_Read
+00001a52       _x86_Disk_getDriveParams
+Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/c/ctype.obj(/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/ctype.c)
+00000013+      islower_
+00000051       toupper_
 Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/c/disk.obj(/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/disk.c)
-00000013+      DISK_initialize_
-00000087+      DISK_LBA2CHS_
-0000013a+      DISK_readSectors_
+00000099       DISK_initialize_
+0000010f+      DISK_LBA2CHS_
+000001c2       DISK_ReadSectors_
+Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/c/fat.obj(/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/fat.c)
+0000025c+      FAT_ReadBootSector_
+00000290+      FAT_ReadFAT_
+000002d4       FAT_Initialize_
+00000518+      FAT_ClusterToLba_
+0000056e+      FAT_OpenEntry_
+00000723+      FAT_NextCluster_
+000007b4       FAT_Read_
+00000ae8       FAT_ReadEntry_
+00000b41       FAT_Close_
+00000bb8+      FAT_FindFile_
+00000d0a       FAT_Open_
 Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/c/main.obj(/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/main.c)
-000001d4       _cstart
+00000e84       _cstart
+Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/c/memory.obj(/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/memory.c)
+00000fff       memcpy_
+00001070       memset_
+000010cc       memcmp_
 Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/c/stdio.obj(/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/stdio.c)
-00000257+      putc_
-0000027e       puts_
-000002b5       _printf
-00000513+      printf_number_
-0000080c+      _g_HexChars
+00001142       putc_
+00001169+      puts_
+000011a0       _printf
+000013fe+      printf_number_
+0000196e+      _g_HexChars
+Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/c/string.obj(/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/string.c)
+00001672       strchr_
+000016cd+      strcpy_
+00001741       strlen_
+Module: /home/splongle/Desktop/projects/muh_os/splongle_os/build/stage2/c/utility.obj(/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/utility.c)
+0000177c+      align_
 
 
                         +---------------------+
@@ -76,22 +103,48 @@ Module          Segment               Class           Address         Size
 ======          =======               =====           =======         ====
 
 stage2.asm      _ENTRY                CODE           00000000         00000013
-x86.asm         _TEXT                                0000081e         000000f8
+x86.asm         _TEXT                                00001984         00000112
+/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/ctype.c
+                _TEXT                 CODE           00000013         00000086
+                CONST                 DATA           00001816         00000000
+                CONST2                DATA           0000196e         00000000
+                _DATA                 DATA           00001980         00000000
 /home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/disk.c
-                _TEXT                 CODE           00000013         000001c1
-                CONST                 DATA           00000788         00000000
-                CONST2                DATA           0000080c         00000000
-                _DATA                 DATA           0000081e         00000000
+                _TEXT                 CODE           00000099         000001c3
+                CONST                 DATA           00001816         00000000
+                CONST2                DATA           0000196e         00000000
+                _DATA                 DATA           00001980         00000000
+/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/fat.c
+                _TEXT                 CODE           0000025c         00000c28
+                CONST                 DATA           00001816         0000011b
+                CONST2                DATA           0000196e         00000000
+                _DATA                 DATA           00001980         00000004
+                _BSS                  BSS            00001a96         00000008
 /home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/main.c
-                _TEXT                 CODE           000001d4         00000083
-                CONST                 DATA           00000788         00000084
-                CONST2                DATA           0000080c         00000000
-                _DATA                 DATA           0000081e         00000000
+                _TEXT                 CODE           00000e84         0000017b
+                CONST                 DATA           00001932         0000003b
+                CONST2                DATA           0000196e         00000000
+                _DATA                 DATA           00001984         00000000
+/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/memory.c
+                _TEXT                 CODE           00000fff         00000143
+                CONST                 DATA           0000196e         00000000
+                CONST2                DATA           0000196e         00000000
+                _DATA                 DATA           00001984         00000000
 /home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/stdio.c
-                _TEXT                 CODE           00000257         00000530
-                CONST                 DATA           0000080c         00000000
-                CONST2                DATA           0000080c         00000011
-                _DATA                 DATA           0000081e         00000000
+                _TEXT                 CODE           00001142         00000530
+                CONST                 DATA           0000196e         00000000
+                CONST2                DATA           0000196e         00000011
+                _DATA                 DATA           00001984         00000000
+/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/string.c
+                _TEXT                 CODE           00001672         0000010a
+                CONST                 DATA           0000196e         00000000
+                CONST2                DATA           00001980         00000000
+                _DATA                 DATA           00001984         00000000
+/home/splongle/Desktop/projects/muh_os/splongle_os/src/boot/stage2/utility.c
+                _TEXT                 CODE           0000177c         00000099
+                CONST                 DATA           0000196e         00000000
+                CONST2                DATA           00001980         00000000
+                _DATA                 DATA           00001984         00000000
 Warning! W1014: stack segment not found
 
 
@@ -100,6 +153,6 @@ Warning! W1014: stack segment not found
                         +-----------------------+
 
 Stack size:  0200 (512.)
-Memory size:  0916 (2326.)
+Memory size:  1a9e (6814.)
 Entry point address: 00000000
 Link time: 00:00.00
