@@ -15,8 +15,8 @@ bool DISK_initialize(DISK* disk, uint8_t driveNum) {
         return false;
     }
     disk->id = driveNum;
-    disk->cylinders = cylinders + 1;
-    disk->heads = heads + 1;
+    disk->cylinders = cylinders;
+    disk->heads = heads;
     disk->sectors = sectors;
     return true;
 }
@@ -50,12 +50,12 @@ sectors - number of sectors to read
 dataOut - pointer to destination buffer for the sector data
 return true if the read succeeded, false after 3 retry attempts
 */
-bool DISK_ReadSectors(DISK* disk, uint32_t lba, uint8_t sectors, void far* dataOut) {
+bool DISK_ReadSectors(DISK* disk, uint32_t lba, uint8_t sectors, void* lowerDataOut) {
     uint16_t cylinder, sector, head;
     DISK_LBA2CHS(disk, lba, &cylinder, &sector, &head);
 
     for(int i = 0; i < 3; ++i) {
-        if(x86_Disk_Read(disk->id, cylinder, sector, head, sectors, dataOut)) {
+        if(x86_Disk_Read(disk->id, cylinder, sector, head, sectors, lowerDataOut)) {
             return true;
         }
         x86_Disk_Reset(disk->id);

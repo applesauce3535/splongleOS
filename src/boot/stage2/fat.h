@@ -1,5 +1,4 @@
 #pragma once
-#pragma pack(push, 1)
 
 #include "disk.h"
 #include "stdint.h"
@@ -21,9 +20,8 @@ typedef struct {
     uint16_t ModifiedDate;      // date of last modification
     uint16_t FirstClusterLow;   // low word of the starting cluster
     uint32_t Size;              // size of the file in bytes
-} FAT_DirectoryEntry;
+} __attribute__((packed)) FAT_DirectoryEntry;   // packed attribute eliminates padding between struct members
 
-#pragma pack(pop)
 
 /*
 represents an open file or directory handle in the FAT file system
@@ -54,10 +52,10 @@ bool FAT_ReadBootSector(DISK* disk);
 bool FAT_ReadFAT (DISK* disk);
 bool FAT_Initialize(DISK* disk);
 uint32_t FAT_ClusterToLba(uint32_t cluster);
-FAT_File far* FAT_OpenEntry(DISK* disk, FAT_DirectoryEntry* entry);
+FAT_File* FAT_OpenEntry(DISK* disk, FAT_DirectoryEntry* entry);
 uint32_t FAT_NextCluster(uint32_t currentCluster);
-uint32_t FAT_Read(DISK* disk, FAT_File far* file, uint32_t byteCount, void* dataOut);
-bool FAT_ReadEntry(DISK* disk, FAT_File far* file, FAT_DirectoryEntry* dirEntry);
-void FAT_Close(FAT_File far* file);
-bool FAT_FindFile(DISK* disk, FAT_File far* file, const char* name, FAT_DirectoryEntry* entryOut);
-FAT_File far* FAT_Open(DISK* disk, const char* path);
+uint32_t FAT_Read(DISK* disk, FAT_File* file, uint32_t byteCount, void* dataOut);
+bool FAT_ReadEntry(DISK* disk, FAT_File* file, FAT_DirectoryEntry* dirEntry);
+void FAT_Close(FAT_File* file);
+bool FAT_FindFile(DISK* disk, FAT_File* file, const char* name, FAT_DirectoryEntry* entryOut);
+FAT_File* FAT_Open(DISK* disk, const char* path);

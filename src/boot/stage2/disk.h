@@ -1,5 +1,6 @@
 #pragma once
-#include "stdint.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 /*
 represents a physical or emulated disk device
@@ -12,4 +13,4 @@ typedef struct {
 } DISK;
 
 bool DISK_initialize(DISK* disk, uint8_t driveNum);
-bool DISK_ReadSectors(DISK* disk, uint32_t lba, uint8_t sectors, void far* dataOut);
+bool DISK_ReadSectors(DISK* disk, uint32_t lba, uint8_t sectors, void* lowerDataOut);

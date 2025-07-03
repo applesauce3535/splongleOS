@@ -1,12 +1,3 @@
-ASM=nasm
-CC=gcc
-CC16=/opt/watcom/binl/wcc
-LD16=/opt/watcom/binl/wlink
-
-SRC_DIR=src
-TOOLS_DIR=tools
-BUILD_DIR=build
-
 include build_scripts/config.mk
 
 .PHONY: all floppy_image kernel bootloader clean always tools_fat
@@ -39,27 +30,27 @@ bootloader: stage1 stage2
 stage1: $(BUILD_DIR)/stage1.bin
 
 $(BUILD_DIR)/stage1.bin: always
-	$(MAKE) -C $(SRC_DIR)/boot/stage1 BUILD_DIR=$(abspath $(BUILD_DIR))
+	$(MAKE) -C src/boot/stage1 BUILD_DIR=$(abspath $(BUILD_DIR))
 
 stage2: $(BUILD_DIR)/stage2.bin
 
 $(BUILD_DIR)/stage2.bin: always
-	$(MAKE) -C $(SRC_DIR)/boot/stage2 BUILD_DIR=$(abspath $(BUILD_DIR))
+	$(MAKE) -C src/boot/stage2 BUILD_DIR=$(abspath $(BUILD_DIR))
 
 #
 # kernel
 #
 kernel: $(BUILD_DIR)/kernel.bin
 $(BUILD_DIR)/kernel.bin: always
-	$(MAKE) -C $(SRC_DIR)/kernel BUILD_DIR=$(abspath $(BUILD_DIR))
+	$(MAKE) -C src/kernel BUILD_DIR=$(abspath $(BUILD_DIR))
 
 #
 # tools
 #
 tools_fat: $(BUILD_DIR)/tools/fat
-$(BUILD_DIR)/tools/fat: always $(TOOLS_DIR)/fat/fat.c
+$(BUILD_DIR)/tools/fat: always tools/fat/fat.c
 	mkdir -p $(BUILD_DIR)/tools
-	$(CC) -g -o $(BUILD_DIR)/tools/fat $(TOOLS_DIR)/fat/fat.c
+	$(CC) -g -o $(BUILD_DIR)/tools/fat tools/fat/fat.c
 
 #
 # always
@@ -71,7 +62,7 @@ always:
 # clean
 #
 clean:
-	$(MAKE) -C $(SRC_DIR)/boot/stage1 BUILD_DIR=$(abspath $(BUILD_DIR)) clean
-	$(MAKE) -C $(SRC_DIR)/boot/stage2 BUILD_DIR=$(abspath $(BUILD_DIR)) clean
-	$(MAKE) -C $(SRC_DIR)/kernel BUILD_DIR=$(abspath $(BUILD_DIR)) clean
+	$(MAKE) -C src/boot/stage1 BUILD_DIR=$(abspath $(BUILD_DIR)) clean
+	$(MAKE) -C src/boot/stage2 BUILD_DIR=$(abspath $(BUILD_DIR)) clean
+	$(MAKE) -C src/kernel BUILD_DIR=$(abspath $(BUILD_DIR)) clean
 	rm -rf $(BUILD_DIR)/*

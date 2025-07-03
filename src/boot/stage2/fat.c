@@ -1,12 +1,11 @@
 #include "fat.h"
 #include "stdio.h"
 #include "memdefs.h"
-#include "utility.h"
 #include "string.h"
 #include "memory.h"
 #include "ctype.h"
-
-#pragma pack(push, 1)
+#include <stddef.h>
+#include "minmax.h"
 
 #define SECTOR_SIZE 512             // The size of a sector in bytes. The smallest unit readable from disk.
 #define MAX_PATH_SIZE 256           // Maximum path length supported (similar to Windows' 255-character limit).
@@ -39,9 +38,8 @@ typedef struct {
     uint32_t VolumeID;          // serial number
     uint8_t VolumeLabel[11];    // 11 bytes, padded with spaces
     uint8_t SystemID[8];        // 8 bytes, padded with spaces, file system type (FAT12)
-} FAT_BootSector; 
+} __attribute__((packed)) FAT_BootSector; 
 
-#pragma pack(pop)
 
 typedef struct {
     // Holds internal file state for an open file or directory.
@@ -65,8 +63,8 @@ typedef struct {
 } FAT_Data;
 
 // nothing else should be messing with the FAT driver so these should be static
-static FAT_Data far* g_Data;        // Pointer to FAT driver's memory space.
-static uint8_t far* g_FAT = NULL;   // Pointer to in-memory FAT table (loaded during initialization).
+static FAT_Data* g_Data;        // Pointer to FAT driver's memory space.
+static uint8_t* g_FAT = NULL;   // Pointer to in-memory FAT table (loaded during initialization).
 static uint32_t g_DataSectionLba;   // LBA offset where the data region (file contents) starts.
 
 /*
@@ -97,14 +95,14 @@ returns true if initialization was successful, false otherwise
 */
 bool FAT_Initialize(DISK* disk) {
     // sets up FAT driver at the expected mem address
-    g_Data = (FAT_Data far*)MEMORY_FAT_ADDR;
+    g_Data = (FAT_Data*)MEMORY_FAT_ADDR;
     // reads boot sector
     if (!FAT_ReadBootSector(disk)) {
         printf("FAT: read boot sector failed\r\n");
         return false;
     }
     // read FAT
-    g_FAT = (uint8_t far*)(g_Data + sizeof(FAT_Data));
+    g_FAT = (uint8_t*)(g_Data + sizeof(FAT_Data));
     uint32_t FAT_size = g_Data->BS.BootSector.BytesPerSector * g_Data->BS.BootSector.SectorsPerFat;
     // ensure we aren't using more memory than allowed
     if (sizeof(FAT_Data) + FAT_size >= MEMORY_FAT_SIZE) {
@@ -164,7 +162,7 @@ disk - pointer to the disk structure
 entry - pointer to the FAT directory entry to open
 returns a pointer to a FAT file structure for the opened file, or NULL if one isn't available
 */
-FAT_File far* FAT_OpenEntry(DISK* disk, FAT_DirectoryEntry* entry) {
+FAT_File* FAT_OpenEntry(DISK* disk, FAT_DirectoryEntry* entry) {
     // find empty handle
     int handle = -1;
     for (int i = 0; i < MAX_FILE_HANDLES && handle < 0; ++i) {
@@ -180,7 +178,7 @@ FAT_File far* FAT_OpenEntry(DISK* disk, FAT_DirectoryEntry* entry) {
     }
 
     // setup vars
-    FAT_FileData far* fd = &g_Data->OpenedFiles[handle];
+    FAT_FileData* fd = &g_Data->OpenedFiles[handle];
     fd->Public.Handle = handle;
     // find if entry is a directory
     fd->Public.IsDirectory = (entry->Attributes & FAT_ATTRIBUTE_DIRECTORY) != 0;
@@ -196,7 +194,11 @@ FAT_File far* FAT_OpenEntry(DISK* disk, FAT_DirectoryEntry* entry) {
 
     // read first sector of file into buffer
     if (!DISK_ReadSectors(disk, FAT_ClusterToLba(fd->CurrentCluster), 1, fd->Buffer)) {
-        printf("FAT: read error\r\n");
+        printf("FAT: open entry read error\r\n");
+        for (int i = 0; i < 11; ++i) {
+            printf("%c", entry->Name[i]);
+        }
+        printf("\n");
         return false;
     }
 
@@ -216,11 +218,11 @@ uint32_t FAT_NextCluster(uint32_t currentCluster) {
     // if the current cluster is even, take the bottom 12 bits
     if (currentCluster % 2 == 0) {
         // converts the uint8* from g_FAT into uint16* and then dereferences that
-        return (*(uint16_t far*)(g_FAT + fatIndex)) & 0x0FFF; // bit mask to remove upper bits
+        return (*(uint16_t*)(g_FAT + fatIndex)) & 0x0FFF; // bit mask to remove upper bits
     }
     // if the current cluster is odd, take the top 12 bits
     else {
-        return (*(uint16_t far*)(g_FAT + fatIndex)) >> 4; // shift by 4 bits
+        return (*(uint16_t*)(g_FAT + fatIndex)) >> 4; // shift by 4 bits
     }
 }
 
@@ -233,12 +235,12 @@ byteCount - number of bytes to read
 dataOut - output buffer to store read data
 returns number of bytes successfully read
 */
-uint32_t FAT_Read(DISK* disk, FAT_File far* file, uint32_t byteCount, void* dataOut) {
+uint32_t FAT_Read(DISK* disk, FAT_File* file, uint32_t byteCount, void* dataOut) {
     // get file data
-    FAT_FileData far* fd = (file->Handle == ROOT_DIRECTORY_HANDLE) ? &g_Data->RootDirectory : &g_Data->OpenedFiles[file->Handle];
+    FAT_FileData* fd = (file->Handle == ROOT_DIRECTORY_HANDLE) ? &g_Data->RootDirectory : &g_Data->OpenedFiles[file->Handle];
     uint8_t* u8DataOut = (uint8_t*)dataOut;
     // don't read past end of file
-    if (!fd->Public.IsDirectory) {
+    if (!fd->Public.IsDirectory || (fd->Public.IsDirectory && fd->Public.Size != 0)) {
         byteCount = min(byteCount, fd->Public.Size - fd->Public.Position);
     }
     while (byteCount > 0) {
@@ -257,7 +259,7 @@ uint32_t FAT_Read(DISK* disk, FAT_File far* file, uint32_t byteCount, void* data
                 ++fd->CurrentCluster;
                 // read next sector
                 if (!DISK_ReadSectors(disk, fd->CurrentCluster, 1, fd->Buffer)) {
-                    printf("FAT: read error\r\n");
+                    printf("FAT: read 1 read error\r\n");
                     break;
                 }
             }
@@ -277,7 +279,7 @@ uint32_t FAT_Read(DISK* disk, FAT_File far* file, uint32_t byteCount, void* data
 
                 // read next sector
                 if (!DISK_ReadSectors(disk, FAT_ClusterToLba(fd->CurrentCluster) + fd->CurrentSectorInCluster, 1, fd->Buffer)) {
-                    printf("FAT: read error\r\n");
+                    printf("FAT: read 2 read error\r\n");
                     break;
                 }
             }
@@ -294,7 +296,7 @@ file - pointer to the FAT file representing a directory
 dirEntry - output pointer for the next directory entry read
 returns true if a valid entry was read, false if end of directory
 */
-bool FAT_ReadEntry(DISK* disk, FAT_File far* file, FAT_DirectoryEntry* dirEntry) {
+bool FAT_ReadEntry(DISK* disk, FAT_File* file, FAT_DirectoryEntry* dirEntry) {
     return FAT_Read(disk, file, sizeof(FAT_DirectoryEntry), dirEntry) == sizeof(FAT_DirectoryEntry);
 }
 
@@ -303,7 +305,7 @@ closes an open file and frees its slot
 
 file - pointer to the FAT file to close
 */
-void FAT_Close(FAT_File far* file) {
+void FAT_Close(FAT_File* file) {
     if (file->Handle == ROOT_DIRECTORY_HANDLE) {
         file->Position = 0;
         g_Data->RootDirectory.CurrentCluster = g_Data->RootDirectory.FirstCluster;
@@ -322,7 +324,7 @@ name - name of the file or directory to find
 entryOut - output pointer to store the found directory entry
 returns true if the entry was found, false otherwise
 */
-bool FAT_FindFile(DISK* disk, FAT_File far* file, const char* name, FAT_DirectoryEntry* entryOut) {
+bool FAT_FindFile(DISK* disk, FAT_File* file, const char* name, FAT_DirectoryEntry* entryOut) {
     char fatName[11];
     FAT_DirectoryEntry entry;
     // convert from name to FAT name
@@ -343,7 +345,7 @@ bool FAT_FindFile(DISK* disk, FAT_File far* file, const char* name, FAT_Director
         fatName[i] = toupper(name[i]);
     }
 
-    if (ext != NULL) {
+    if (ext != name + 11) {
         for (int i = 0; i < 3 && ext[i + 1]; ++i) {
             fatName[i + 8] = toupper(ext[i + 1]);
         }
@@ -366,7 +368,7 @@ disk - pointer to the disk structure
 path - null-terminated string containing the path
 returns pointer to a FAT file structure for the opened file, or NULL if not found
 */
-FAT_File far* FAT_Open(DISK* disk, const char* path) {
+FAT_File* FAT_Open(DISK* disk, const char* path) {
     // by default Windows limits paths to 255, so I'll do the same
     char name[MAX_PATH_SIZE];
     
@@ -375,7 +377,7 @@ FAT_File far* FAT_Open(DISK* disk, const char* path) {
         path++;
     }
 
-    FAT_File far* current = &g_Data->RootDirectory.Public;
+    FAT_File* current = &g_Data->RootDirectory.Public;
 
     while (*path) {
         // extract next file name from path

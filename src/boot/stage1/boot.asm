@@ -361,8 +361,8 @@ file_stage2_bin: db 'STAGE2  BIN'
 msg_stage2_not_found: db 'stage2 not found.', ENDL, 0
 stage2_cluster: dw 0
 
-STAGE2_LOAD_SEGMENT equ 0x2000
-STAGE2_LOAD_OFFSET equ 0
+STAGE2_LOAD_SEGMENT equ 0x0
+STAGE2_LOAD_OFFSET equ 0x500
 
 
 ; fill the rest of the boot sector with 0s up to 510 bytes

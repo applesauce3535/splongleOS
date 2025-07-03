@@ -1,5 +1,6 @@
 #include "string.h"
-#include "stdint.h"
+#include <stdint.h>
+#include <stddef.h>
 
 /*
 takes a string and character as input, returns pointer to the first matching instance

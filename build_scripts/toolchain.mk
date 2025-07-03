@@ -1,13 +1,11 @@
 TOOLCHAIN_PREFIX = $(abspath toolchain/$(TARGET))
 export PATH := $(TOOLCHAIN_PREFIX)/bin:$(PATH)
 
-export TARGET_CC = $(TARGET)-gcc
-export TARGET_CXX = $(TARGET)-g++
-export TARGET_LD = $(TARGET)-gcc
-
 toolchain: toolchain_binutils toolchain_gcc
 
+BINUTILS_SRC = toolchain/binutils-2.44
 BINUTILS_BUILD = toolchain/binutils-build
+GCC_SRC = toolchain/gcc-15.1.0
 GCC_BUILD = toolchain/gcc-build
 
 toolchain_binutils: toolchain/binutils-$(BINUTILS_VERSION).tar.xz
@@ -42,3 +40,13 @@ toolchain/gcc-$(GCC_VERSION).tar.gz:
 	mkdir -p toolchain
 	cd toolchain && wget $(GCC_URL)
 
+#
+# clean
+#
+clean-toolchain:
+	rm -rf $(GCC_BUILD) $(GCC_SRC) $(BINUTILS_BUILD) $(BINUTILS_SRC)
+
+clean-toolchain-all:
+	rm -rf toolchain/*
+
+.PHONY: toolchain toolchain_binutils toolchain_gcc

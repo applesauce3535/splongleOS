@@ -1,11 +1,18 @@
-#include "stdint.h"
+#include <stdint.h>
 #include "stdio.h"
+#include "x86.h"
 #include "fat.h"
 #include "disk.h"
+#include "memdefs.h"
+#include "memory.h"
 
-#pragma aux _cstart "*"
+uint8_t* kernelLoadBuffer = (uint8_t*)MEMORY_LOAD_KERNEL;
+uint8_t* kernel = (uint8_t*)MEMORY_KERNEL_ADDR;
 
-void _cdecl _cstart(uint16_t bootDrive) {
+typedef void (*KernelStart)();
+
+void __attribute__((cdecl)) start(uint16_t bootDrive) {
+    clrscr();
     DISK disk;
     if (!DISK_initialize(&disk, bootDrive)) {
         printf("disk init error\r\n");  // disk initialization fail
@@ -17,30 +24,27 @@ void _cdecl _cstart(uint16_t bootDrive) {
         goto end;
     }
 
-    // browse files in root
-    FAT_File far* fd = FAT_Open(&disk, "/");
-    FAT_DirectoryEntry entry;
-    int i = 0;
-    while (FAT_ReadEntry(&disk, fd, &entry) && i++ < 5) {
-        printf("   ");
-        for (int i = 0; i < 11; ++i) {
-            putc(entry.Name[i]);
-        }
-        printf("\r\n");
+    // load kernel
+    FAT_File* fd = FAT_Open(&disk, "/kernel.bin");
+    if (!fd) {
+        printf("Failed to open kernel\r\n");
+        goto end;
     }
-    FAT_Close(fd);
-
-    // read test.txt
-    char buffer[100];
-    fd = FAT_Open(&disk, "bitch/test.txt");
     uint32_t read;
-    while ((read = FAT_Read(&disk, fd, sizeof(buffer), buffer))) {
-        for (uint32_t i = 0; i < read; ++i) {
-            putc(buffer[i]);
-        }
+    uint8_t* kernelBuffer = kernel;
+    while ((read = FAT_Read(&disk, fd, MEMORY_LOAD_SIZE, kernelLoadBuffer))) {
+        printf("read %u bytes\r\n", read);
+        memcpy(kernelBuffer, kernelLoadBuffer, read);
+        kernelBuffer += read;
     }
     FAT_Close(fd);
 
-end:
-    for(;;);
+    // execute kernel
+    printf("Kernel found and preparing to load\r\n");
+    KernelStart kernelStart = (KernelStart)kernel;
+    printf("Preparing to load kernel at %x\r\n", kernel);
+    kernelStart();
+    printf("we're still in the bootloader, kernel didn't start\r\n");
+    end:
+        for(;;);
 }
