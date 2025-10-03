@@ -18,8 +18,8 @@ $(BUILD_DIR)/splongleOS.img: bootloader kernel
 	mcopy -i $(BUILD_DIR)/splongleOS.img $(BUILD_DIR)/stage2.bin "::stage2.bin" 
 	mcopy -i $(BUILD_DIR)/splongleOS.img $(BUILD_DIR)/kernel.bin "::kernel.bin" 
 	mcopy -i $(BUILD_DIR)/splongleOS.img test.txt "::test.txt" 
-	mmd -i $(BUILD_DIR)/splongleOS.img "::bitch"
-	mcopy -i $(BUILD_DIR)/splongleOS.img test.txt "::bitch/test.txt" 
+	mmd -i $(BUILD_DIR)/splongleOS.img "::testdir"
+	mcopy -i $(BUILD_DIR)/splongleOS.img test.txt "::testdir/test2.txt" 
 
 
 #
