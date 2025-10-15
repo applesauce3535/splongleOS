@@ -99,7 +99,7 @@ LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/..
  .data          0x000020a8        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/stage2/c/fat.obj
  .data          0x000020a8        0x8 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/stage2/c/main.obj
                 0x000020a8                kernelLoadBuffer
-                0x000020ac                kernel
+                0x000020ac                Kernel
  .data          0x000020b0        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/stage2/c/memory.obj
  .data          0x000020b0        0x4 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/stage2/c/stdio.obj
                 0x000020b0                g_ScreenBuffer

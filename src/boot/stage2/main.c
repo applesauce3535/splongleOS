@@ -7,7 +7,7 @@
 #include "memory.h"
 
 uint8_t* kernelLoadBuffer = (uint8_t*)MEMORY_LOAD_KERNEL;
-uint8_t* kernel = (uint8_t*)MEMORY_KERNEL_ADDR;
+uint8_t* Kernel = (uint8_t*)MEMORY_KERNEL_ADDR;
 
 typedef void (*KernelStart)();
 
@@ -31,7 +31,7 @@ void __attribute__((cdecl)) start(uint16_t bootDrive) {
         goto end;
     }
     uint32_t read;
-    uint8_t* kernelBuffer = kernel;
+    uint8_t* kernelBuffer = Kernel;
     while ((read = FAT_Read(&disk, fd, MEMORY_LOAD_SIZE, kernelLoadBuffer))) {
         printf("read %u bytes\r\n", read);
         memcpy(kernelBuffer, kernelLoadBuffer, read);
@@ -41,8 +41,8 @@ void __attribute__((cdecl)) start(uint16_t bootDrive) {
 
     // execute kernel
     printf("Kernel found and preparing to load\r\n");
-    KernelStart kernelStart = (KernelStart)kernel;
-    printf("Preparing to load kernel at %x\r\n", kernel);
+    KernelStart kernelStart = (KernelStart)Kernel;
+    printf("Preparing to load kernel at %x\r\n", Kernel);
     kernelStart();
     printf("we're still in the bootloader, kernel didn't start\r\n");
     end:

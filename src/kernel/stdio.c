@@ -130,7 +130,7 @@ length - length of number in bits
 sign - determines if the number is signed or not
 radix - base number system used for number
 */
-void printf_unsigned(unsigned long long number, int radix) {
+void printk_unsigned(unsigned long long number, int radix) {
     char buffer[32];
     int pos = 0;                // keeps track of current buffer position
 
@@ -147,13 +147,13 @@ void printf_unsigned(unsigned long long number, int radix) {
     }
 }
 
-void printf_signed(unsigned long long number, int radix) {
+void printk_signed(signed long long number, int radix) {
     if (number < 0) {
         putc('-');
-        printf_unsigned(-number, radix);
+        printk_unsigned(-number, radix);
     }
     else {
-        printf_unsigned(number, radix);
+        printk_unsigned(number, radix);
     }
 }
 
@@ -169,7 +169,6 @@ void printf_signed(unsigned long long number, int radix) {
 #define PRINTF_LENGTH_LONG 3
 #define PRINTF_LENGTH_LONG_LONG 4
 
-int* printf_number(int* argp, int length, bool sign, int radix);
 
 /*
 writes a formatted string to the output hardware
@@ -177,7 +176,7 @@ writes a formatted string to the output hardware
 fmt - string containing format specifications
 all formatted parameters follow the string section
 */
-void printf(const char* fmt, ...) {
+void printk(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
 
@@ -289,15 +288,15 @@ void printf(const char* fmt, ...) {
                             case PRINTF_LENGTH_SHORT_SHORT:  
                             case PRINTF_LENGTH_SHORT: 
                             case PRINTF_LENGTH_DEFAULT: 
-                                printf_signed(va_arg(args, int), radix);
+                                printk_signed(va_arg(args, int), radix);
                                 break;
                             
                             case PRINTF_LENGTH_LONG:
-                                printf_signed(va_arg(args, long), radix);
+                                printk_signed(va_arg(args, long), radix);
                                 break;
 
                             case PRINTF_LENGTH_LONG_LONG:
-                                printf_signed(va_arg(args, long long), radix);
+                                printk_signed(va_arg(args, long long), radix);
                                 break;
                         }
                     }
@@ -306,15 +305,15 @@ void printf(const char* fmt, ...) {
                             case PRINTF_LENGTH_SHORT_SHORT:  
                             case PRINTF_LENGTH_SHORT: 
                             case PRINTF_LENGTH_DEFAULT: 
-                                printf_unsigned(va_arg(args, unsigned int), radix);
+                                printk_unsigned(va_arg(args, unsigned int), radix);
                                 break;
                             
                             case PRINTF_LENGTH_LONG:
-                                printf_unsigned(va_arg(args, unsigned long), radix);
+                                printk_unsigned(va_arg(args, unsigned long), radix);
                                 break;
 
                             case PRINTF_LENGTH_LONG_LONG:
-                                printf_unsigned(va_arg(args, unsigned long long), radix);
+                                printk_unsigned(va_arg(args, unsigned long long), radix);
                                 break;
                         }
                     }
