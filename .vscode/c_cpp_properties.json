@@ -10,7 +10,7 @@
       "cppStandard": "${default}",
       "intelliSenseMode": "linux-gcc-x64",
       "compilerArgs": [
-        "-std=c99 -ffreestanding -nostdlib"
+        "-std=c99", "-ffreestanding", "-nostdlib"
       ]
     }
   ],

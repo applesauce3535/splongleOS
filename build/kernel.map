@@ -1,9 +1,9 @@
 Archive member included to satisfy reference by file (symbol)
 
 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
-                              /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj (__udivdi3)
+                              /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj (__udivdi3)
 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
-                              /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj (__umoddi3)
+                              /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj (__umoddi3)
 
 There are no discarded input sections
 
@@ -14,166 +14,228 @@ Name             Origin             Length             Attributes
 
 Linker script and memory map
 
-LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/asm/multiboot_header.obj
-LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/asm/x86.obj
-LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
-LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/memory.obj
-LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
+LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/asm/./arch/i686/gdt.obj
+LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/asm/./arch/i686/idt.obj
+LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/asm/./arch/i686/io.obj
+LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/asm/./multiboot_header.obj
+LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/gdt.obj
+LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/idt.obj
+LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./hal/hal.obj
+LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
+LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./memory.obj
+LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
 LOAD /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a
                 0x00100000                        phys = 0x100000
                 0x00100000                        . = phys
 
-.entry          0x00100000       0x3f
+.entry          0x00100000       0x5b
                 0x00100000                        __entry_start = .
  *(.entry)
- .entry         0x00100000       0x3f /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
+ .entry         0x00100000       0x5b /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
                 0x00100000                start
 
-.text           0x00100040      0xbd6
-                0x00100040                        __text_start = .
+.text           0x00100060      0xcf6
+                0x00100060                        __text_start = .
  *(.text)
- .text          0x00100040       0x14 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/asm/x86.obj
-                0x00100040                x86_outb
-                0x0010004b                x86_inb
- .text          0x00100054        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
- .text          0x00100054       0xe3 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/memory.obj
-                0x00100054                memcpy
-                0x001000a0                memset
-                0x001000dd                memcmp
- .text          0x00100137      0x87a /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
-                0x00100137                putchr
-                0x00100166                putcolor
-                0x00100198                getchr
-                0x001001ba                getcolor
-                0x001001df                setcursor
-                0x00100250                clrscr
-                0x001002de                scrollback
-                0x001003cc                putc
-                0x001004dc                puts
-                0x0010050b                printk_unsigned
-                0x001005af                printk_signed
-                0x0010060c                printk
- *fill*         0x001009b1        0xf 
- .text          0x001009c0      0x11a /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
-                0x001009c0                __udivdi3
- *fill*         0x00100ada        0x6 
- .text          0x00100ae0      0x136 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
-                0x00100ae0                __umoddi3
+ .text          0x00100060       0x25 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/asm/./arch/i686/gdt.obj
+                0x00100060                i686_GDT_load
+ *fill*         0x00100085        0xb 
+ .text          0x00100090        0xd /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/asm/./arch/i686/idt.obj
+                0x00100090                i686_IDT_Load
+ *fill*         0x0010009d        0x3 
+ .text          0x001000a0       0x14 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/asm/./arch/i686/io.obj
+                0x001000a0                x86_outb
+                0x001000ab                x86_inb
+ .text          0x001000b4       0x1d /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/gdt.obj
+                0x001000b4                i686_GDT_Initialize
+ .text          0x001000d1       0xba /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/idt.obj
+                0x001000d1                i686_IDT_SetGate
+                0x00100132                i686_IDT_EnableGate
+                0x00100152                i686_IDT_DisableGate
+                0x00100172                i686_IDT_Initialize
+ .text          0x0010018b       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./hal/hal.obj
+                0x0010018b                HAL_Init
+ .text          0x0010019e        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
+ .text          0x0010019e       0xe3 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./memory.obj
+                0x0010019e                memcpy
+                0x001001ea                memset
+                0x00100227                memcmp
+ .text          0x00100281      0x87e /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
+                0x00100281                putchr
+                0x001002b0                putcolor
+                0x001002e2                getchr
+                0x00100304                getcolor
+                0x00100329                setcursor
+                0x0010039a                clrscr
+                0x00100428                scrollback
+                0x00100516                putc
+                0x00100626                puts
+                0x00100655                printk_unsigned
+                0x001006f9                printk_signed
+                0x00100756                printk
+ *fill*         0x00100aff        0x1 
+ .text          0x00100b00      0x11a /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
+                0x00100b00                __udivdi3
+ *fill*         0x00100c1a        0x6 
+ .text          0x00100c20      0x136 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
+                0x00100c20                __umoddi3
 
-.data           0x00100c18        0x4
-                0x00100c18                        __data_start = .
+.data           0x00100d58       0x2c
+                0x00100d58                        __data_start = .
  *(.data)
- .data          0x00100c18        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
- .data          0x00100c18        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/memory.obj
- .data          0x00100c18        0x4 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
-                0x00100c18                g_ScreenBuffer
- .data          0x00100c1c        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
- .data          0x00100c1c        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
+ .data          0x00100d58       0x1e /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/gdt.obj
+                0x00100d58                g_GDT
+                0x00100d70                g_GDTDescriptor
+ *fill*         0x00100d76        0x2 
+ .data          0x00100d78        0x6 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/idt.obj
+                0x00100d78                g_IDTDescriptor
+ .data          0x00100d7e        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./hal/hal.obj
+ .data          0x00100d7e        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
+ .data          0x00100d7e        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./memory.obj
+ *fill*         0x00100d7e        0x2 
+ .data          0x00100d80        0x4 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
+                0x00100d80                g_ScreenBuffer
+ .data          0x00100d84        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
+ .data          0x00100d84        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
 
-.rodata         0x00100c1c       0x41
-                0x00100c1c                        __rodata_start = .
+.rodata         0x00100d84       0x59
+                0x00100d84                        __rodata_start = .
  *(.rodata)
- .rodata        0x00100c1c       0x24 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
- .rodata        0x00100c40       0x1d /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
-                0x00100c40                SCREEN_WIDTH
-                0x00100c44                SCREEN_HEIGHT
-                0x00100c48                DEFAULT_COLOR
-                0x00100c4c                g_HexChars
+ .rodata        0x00100d84       0x3c /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
+ .rodata        0x00100dc0       0x1d /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
+                0x00100dc0                SCREEN_WIDTH
+                0x00100dc4                SCREEN_HEIGHT
+                0x00100dc8                DEFAULT_COLOR
+                0x00100dcc                g_HexChars
 
-.multiboot      0x00100c60        0xd
- .multiboot     0x00100c60        0xd /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/asm/multiboot_header.obj
-                0x00100c6c                multiboot_header
+.multiboot      0x00100de0        0xd
+ .multiboot     0x00100de0        0xd /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/asm/./multiboot_header.obj
+                0x00100dec                multiboot_header
 
-.eh_frame       0x00100c70       0xd8
- .eh_frame      0x00100c70       0x64 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
- .eh_frame      0x00100cd4       0x74 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
+.eh_frame       0x00100df0       0xd8
+ .eh_frame      0x00100df0       0x64 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
+ .eh_frame      0x00100e54       0x74 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
 
-.bss            0x00100d48        0x8
-                0x00100d48                        __bss_start = .
+.bss            0x00100ee0      0x808
+                0x00100ee0                        __bss_start = .
  *(.bss)
- .bss           0x00100d48        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
- .bss           0x00100d48        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/memory.obj
- .bss           0x00100d48        0x8 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
-                0x00100d48                g_ScreenX
-                0x00100d4c                g_ScreenY
- .bss           0x00100d50        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
- .bss           0x00100d50        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
-                0x00100d50                        __end = .
+ .bss           0x00100ee0        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/gdt.obj
+ .bss           0x00100ee0      0x800 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/idt.obj
+                0x00100ee0                g_IDT
+ .bss           0x001016e0        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./hal/hal.obj
+ .bss           0x001016e0        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
+ .bss           0x001016e0        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./memory.obj
+ .bss           0x001016e0        0x8 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
+                0x001016e0                g_ScreenX
+                0x001016e4                g_ScreenY
+ .bss           0x001016e8        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
+ .bss           0x001016e8        0x0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
+                0x001016e8                        __end = .
 OUTPUT(/mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel.bin binary)
 
-.debug_info     0x00000000      0xe43
- .debug_info    0x00000000      0x10c /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
- .debug_info    0x0000010c      0x1eb /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/memory.obj
- .debug_info    0x000002f7      0x4cb /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
- .debug_info    0x000007c2      0x331 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
- .debug_info    0x00000af3      0x350 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
+.debug_info     0x00000000     0x1330
+ .debug_info    0x00000000      0x1f9 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/gdt.obj
+ .debug_info    0x000001f9      0x24d /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/idt.obj
+ .debug_info    0x00000446       0x99 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./hal/hal.obj
+ .debug_info    0x000004df      0x11a /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
+ .debug_info    0x000005f9      0x1eb /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./memory.obj
+ .debug_info    0x000007e4      0x4cb /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
+ .debug_info    0x00000caf      0x331 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
+ .debug_info    0x00000fe0      0x350 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
 
-.debug_abbrev   0x00000000      0x611
- .debug_abbrev  0x00000000       0xd7 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
- .debug_abbrev  0x000000d7       0xe1 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/memory.obj
- .debug_abbrev  0x000001b8      0x18f /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
- .debug_abbrev  0x00000347      0x15a /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
- .debug_abbrev  0x000004a1      0x170 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
+.debug_abbrev   0x00000000      0x86e
+ .debug_abbrev  0x00000000       0xdf /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/gdt.obj
+ .debug_abbrev  0x000000df      0x111 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/idt.obj
+ .debug_abbrev  0x000001f0       0x5a /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./hal/hal.obj
+ .debug_abbrev  0x0000024a       0xea /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
+ .debug_abbrev  0x00000334       0xe1 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./memory.obj
+ .debug_abbrev  0x00000415      0x18f /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
+ .debug_abbrev  0x000005a4      0x15a /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
+ .debug_abbrev  0x000006fe      0x170 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
 
-.debug_aranges  0x00000000       0xa0
+.debug_aranges  0x00000000      0x100
  .debug_aranges
-                0x00000000       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
+                0x00000000       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/gdt.obj
  .debug_aranges
-                0x00000020       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/memory.obj
+                0x00000020       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/idt.obj
  .debug_aranges
-                0x00000040       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
+                0x00000040       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./hal/hal.obj
  .debug_aranges
-                0x00000060       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
+                0x00000060       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
  .debug_aranges
-                0x00000080       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
+                0x00000080       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./memory.obj
+ .debug_aranges
+                0x000000a0       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
+ .debug_aranges
+                0x000000c0       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
+ .debug_aranges
+                0x000000e0       0x20 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
+
+.debug_line     0x00000000      0x96f
+ .debug_line    0x00000000       0x5c /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/gdt.obj
+ .debug_line    0x0000005c       0x8f /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/idt.obj
+ .debug_line    0x000000eb       0x5e /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./hal/hal.obj
+ .debug_line    0x00000149       0x6f /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
+ .debug_line    0x000001b8       0xd6 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./memory.obj
+ .debug_line    0x0000028e      0x396 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
+ .debug_line    0x00000624      0x17b /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
+ .debug_line    0x0000079f      0x1d0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
+
+.debug_str      0x00000000      0xf0c
+ .debug_str     0x00000000      0x305 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/gdt.obj
+ .debug_str     0x00000305      0x297 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/idt.obj
+ .debug_str     0x0000059c      0x100 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./hal/hal.obj
+ .debug_str     0x0000069c      0x11e /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
+ .debug_str     0x000007ba      0x125 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./memory.obj
+ .debug_str     0x000008df      0x233 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
+ .debug_str     0x00000b12      0x1fd /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
+ .debug_str     0x00000d0f      0x1fd /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
+
+.debug_line_str
+                0x00000000      0x829
+ .debug_line_str
+                0x00000000      0x112 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/gdt.obj
+ .debug_line_str
+                0x00000112      0x118 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/idt.obj
+ .debug_line_str
+                0x0000022a       0xac /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./hal/hal.obj
+ .debug_line_str
+                0x000002d6      0x11c /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
+ .debug_line_str
+                0x000003f2      0x107 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./memory.obj
+ .debug_line_str
+                0x000004f9      0x11c /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
+ .debug_line_str
+                0x00000615      0x10a /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
+ .debug_line_str
+                0x0000071f      0x10a /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
+
+.comment        0x00000000       0x98
+ .comment       0x00000000       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/gdt.obj
+ .comment       0x00000013       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/idt.obj
+ .comment       0x00000026       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./hal/hal.obj
+ .comment       0x00000039       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
+ .comment       0x0000004c       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./memory.obj
+ .comment       0x0000005f       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
+ .comment       0x00000072       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
+ .comment       0x00000085       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
+
+.debug_frame    0x00000000      0x334
+ .debug_frame   0x00000000       0x34 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/gdt.obj
+ .debug_frame   0x00000034       0x94 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./arch/i686/idt.obj
+ .debug_frame   0x000000c8       0x34 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./hal/hal.obj
+ .debug_frame   0x000000fc       0x2c /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
+ .debug_frame   0x00000128       0x74 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./memory.obj
+ .debug_frame   0x0000019c      0x198 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./stdio.obj
 
 .debug_rnglists
                 0x00000000       0x5c
  .debug_rnglists
-                0x00000000       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
+                0x00000000       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/./main.obj
  .debug_rnglists
                 0x00000013       0x2a /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
  .debug_rnglists
                 0x0000003d       0x1f /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
-
-.debug_line     0x00000000      0x813
- .debug_line    0x00000000       0x63 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
- .debug_line    0x00000063       0xd6 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/memory.obj
- .debug_line    0x00000139      0x38f /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
- .debug_line    0x000004c8      0x17b /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
- .debug_line    0x00000643      0x1d0 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
-
-.debug_str      0x00000000      0x867
- .debug_str     0x00000000      0x115 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
- .debug_str     0x00000115      0x125 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/memory.obj
- .debug_str     0x0000023a      0x233 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
- .debug_str     0x0000046d      0x1fd /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
- .debug_str     0x0000066a      0x1fd /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
-
-.debug_line_str
-                0x00000000      0x540
- .debug_line_str
-                0x00000000      0x112 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
- .debug_line_str
-                0x00000112      0x107 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/memory.obj
- .debug_line_str
-                0x00000219      0x113 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
- .debug_line_str
-                0x0000032c      0x10a /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
- .debug_line_str
-                0x00000436      0x10a /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
-
-.comment        0x00000000       0x5f
- .comment       0x00000000       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
- .comment       0x00000013       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/memory.obj
- .comment       0x00000026       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
- .comment       0x00000039       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_udivdi3.o)
- .comment       0x0000004c       0x13 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/toolchain/i686-elf/bin/../lib/gcc/i686-elf/15.1.0/libgcc.a(_umoddi3.o)
-
-.debug_frame    0x00000000      0x238
- .debug_frame   0x00000000       0x2c /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/main.obj
- .debug_frame   0x0000002c       0x74 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/memory.obj
- .debug_frame   0x000000a0      0x198 /mnt/c/Users/thato/Desktop/projects/OS/splongleOS/build/kernel/c/stdio.obj
 
 .debug_loclists
                 0x00000000      0x940

@@ -1,5 +1,5 @@
 #include "stdio.h"
-#include "x86.h"
+#include "arch/i686/io.h"
 #include <stdarg.h>
 #include <stdbool.h>
 
@@ -324,6 +324,7 @@ void printk(const char* fmt, ...) {
                 length = PRINTF_LENGTH_DEFAULT;
                 radix = 10;
                 sign = false;
+                number = false;
                 break;
                 
             default:

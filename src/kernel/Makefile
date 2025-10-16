@@ -1,13 +1,16 @@
 TARGET_ASMFLAGS += -f elf
-TARGET_CFLAGS += -ffreestanding -nostdlib
+TARGET_CFLAGS += -ffreestanding -nostdlib -I. 
 TARGET_LIBS += -lgcc
 TARGET_LINKFLAGS += -T linker.ld -nostdlib
 
 ELF_LINKFLAGS = -T linker_elf.ld -nostdlib
 
-SOURCES_C=$(wildcard *.c)
-SOURCES_ASM=$(wildcard *.asm)
+HEADERS_C=$(shell find . -type f -name "*.h")
+SOURCES_C=$(shell find . -type f -name "*.c")
 OBJECTS_C=$(patsubst %.c, $(BUILD_DIR)/kernel/c/%.obj, $(SOURCES_C))
+
+HEADERS_ASM=$(shell find . -type f -name "*.inc")
+SOURCES_ASM=$(shell find . -type f -name "*.asm")
 OBJECTS_ASM=$(patsubst %.asm, $(BUILD_DIR)/kernel/asm/%.obj, $(SOURCES_ASM))
 
 # also assemble .S NASM files
@@ -28,10 +31,12 @@ kernel: $(BUILD_DIR)/kernel.bin
 $(BUILD_DIR)/kernel.bin: $(OBJECTS_ASM) $(OBJECTS_C)
 	$(TARGET_LD) $(TARGET_LINKFLAGS) -Wl,-Map=$(BUILD_DIR)/kernel.map -o $@ $^ $(TARGET_LIBS)
 
-$(BUILD_DIR)/kernel/c/%.obj: %.c always
+$(BUILD_DIR)/kernel/c/%.obj: %.c $(HEADERS_C)
+	mkdir -p $(dir $@)
 	$(TARGET_CC) $(TARGET_CFLAGS) -c -o $@ $<
 
-$(BUILD_DIR)/kernel/asm/%.obj: %.asm always
+$(BUILD_DIR)/kernel/asm/%.obj: %.asm $(HEADERS_ASM)
+	mkdir -p $(dir $@)
 	$(TARGET_ASM) $(TARGET_ASMFLAGS) -o $@ $<
 
 # $(BUILD_DIR)/kernel/asm/%.obj: %.S always
