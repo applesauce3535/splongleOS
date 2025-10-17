@@ -32,11 +32,11 @@ this function writes to a VGA port and tells it to move the cursor
 void setcursor(int x, int y) {
     int pos = y * SCREEN_WIDTH + x;
     // setting lower byte on 3D4 port
-    x86_outb(0x3D4, 0x0F);
-    x86_outb(0x3D5, (uint8_t)(pos & 0xFF));
+    i686_outb(0x3D4, 0x0F);
+    i686_outb(0x3D5, (uint8_t)(pos & 0xFF));
     // setting upper byte on 3D5 port
-    x86_outb(0x3D4, 0x0E);
-    x86_outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
+    i686_outb(0x3D4, 0x0E);
+    i686_outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
 }
 
 void clrscr() {
