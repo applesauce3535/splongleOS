@@ -3,6 +3,8 @@
 #include "memory.h"
 #include "hal/hal.h"
 
+void crash_me();
+
 extern uint8_t __bss_start;
 extern uint8_t __end;
 
@@ -10,8 +12,9 @@ void __attribute__((section(".entry"))) start(uint16_t bootDrive) {
     memset(&__bss_start, 0, (uint16_t)((&__end) - (&__bss_start)));
     HAL_Init();
     printk("Hello world from splongleOS kernel\n");
-    printk("Number %d string %s", 123, "sss");
-    
+
+    crash_me();
+
     end:
         for (;;);
 }

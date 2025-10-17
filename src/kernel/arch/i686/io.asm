@@ -15,3 +15,16 @@ x86_inb:
     xor eax, eax
     in al, dx
     ret
+
+global i686_panic
+i686_panic:
+    cli
+    hlt
+
+global crash_me
+crash_me:
+    mov eax, 0xFFFFFFFF
+    mov edx, 0xFFFFFFFF
+    mov ebx, 2
+    div ebx
+    ret

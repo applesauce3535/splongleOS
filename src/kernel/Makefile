@@ -5,16 +5,33 @@ TARGET_LINKFLAGS += -T linker.ld -nostdlib
 
 ELF_LINKFLAGS = -T linker_elf.ld -nostdlib
 
-HEADERS_C=$(shell find . -type f -name "*.h")
-SOURCES_C=$(shell find . -type f -name "*.c")
-OBJECTS_C=$(patsubst %.c, $(BUILD_DIR)/kernel/c/%.obj, $(SOURCES_C))
+HEADERS_C = $(wildcard *.h) \
+            $(wildcard */*.h) \
+            $(wildcard */*/*.h) \
+            $(wildcard */*/*/*.h)
 
-HEADERS_ASM=$(shell find . -type f -name "*.inc")
-SOURCES_ASM=$(shell find . -type f -name "*.asm")
-OBJECTS_ASM=$(patsubst %.asm, $(BUILD_DIR)/kernel/asm/%.obj, $(SOURCES_ASM))
+SOURCES_C = $(wildcard *.c) \
+            $(wildcard */*.c) \
+            $(wildcard */*/*.c) \
+            $(wildcard */*/*/*.c) \
+            arch/i686/isrs_gen.c
 
-# also assemble .S NASM files
-# OBJECTS_ASM += $(patsubst %.S, $(BUILD_DIR)/kernel/asm/%.obj, $(filter %.S,$(SOURCES_ASM)))
+OBJECTS_C = $(patsubst %.c, $(BUILD_DIR)/kernel/c/%.obj, $(SOURCES_C))
+
+HEADERS_ASM = $(wildcard *.inc) \
+              $(wildcard */*.inc) \
+              $(wildcard */*/*.inc) \
+              $(wildcard */*/*/*.inc) \
+              arch/i686/isrs_gen.inc
+
+SOURCES_ASM = $(wildcard *.asm) \
+              $(wildcard */*.asm) \
+              $(wildcard */*/*.asm) \
+              $(wildcard */*/*/*.asm)
+
+
+OBJECTS_ASM = $(patsubst %.asm, $(BUILD_DIR)/kernel/asm/%.obj, $(SOURCES_ASM))
+
 
 .PHONY: all kernel kernel_elf clean always
 
@@ -39,8 +56,8 @@ $(BUILD_DIR)/kernel/asm/%.obj: %.asm $(HEADERS_ASM)
 	mkdir -p $(dir $@)
 	$(TARGET_ASM) $(TARGET_ASMFLAGS) -o $@ $<
 
-# $(BUILD_DIR)/kernel/asm/%.obj: %.S always
-# 	$(TARGET_ASM) $(TARGET_ASMFLAGS) -o $@ $<
+arch/i686/isrs_gen.c arch/i686/isrs_gen.inc:
+	@$(SOURCE_DIR)/build_scripts/gen_isrs.sh $@
 
 always:
 	mkdir -p $(BUILD_DIR)/kernel/c
