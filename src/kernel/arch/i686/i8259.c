@@ -1,4 +1,4 @@
-#include "pic.h"
+#include "i8259.h"
 #include "io.h"
 
 #define PIC1_COMMAND_PORT   0x20
@@ -9,7 +9,7 @@
 /*
     Initialization Control Word 1
     -----------------------------
-    0   ICw4    if set, the PIC expects to receive ICW4 during initialization
+    0   ICW4    if set, the PIC expects to receive ICW4 during initialization
     1   SGNL    if set, only 1 PIC in the system, if unset, PIC cascaded with slave PIC
                 and ICW3 must be sent to controller
     2   ADI     ignored on x86, set to 0
@@ -17,7 +17,6 @@
     4   INIT    set to 1 to initialize PIC
     5-7         ignored on x86, set to 0
 */
-
 typedef enum {
     PIC_ICW1_ICW4       = 0x01,
     PIC_ICW1_SINGLE     = 0x02,
@@ -36,7 +35,6 @@ typedef enum {
     4   SFNM    specially fully nested mode; used in systems with large number of cascaded controllers (irrelevant here)
     5-7         reserved, set to 0
 */
-
 typedef enum {
     PIC_ICW4_8086           = 0x01,
     PIC_ICW4_AUTO_EOI       = 0x02,
@@ -52,8 +50,20 @@ typedef enum {
     PIC_CMD_READ_ISR    = 0x0B
 } PIC_CMD;
 
+static uint16_t g_PICMask = 0xFFFF;
 
-void i686_PIC_Config(uint8_t offsetPIC1, uint8_t offsetPIC2) {
+void i8259_SetMask(uint16_t newMask) {
+    g_PICMask = newMask;
+    i686_outb(PIC1_DATA_PORT, g_PICMask & 0xFF);
+    i686_io_wait();
+    i686_outb(PIC2_DATA_PORT, g_PICMask >> 8);
+    i686_io_wait();
+}
+
+void i8259_Config(uint8_t offsetPIC1, uint8_t offsetPIC2) {
+    // mask everything
+    i8259_SetMask(0xFFFF);
+
     // initialize control word 1
     // uses ICW4, edge triggered mode, cascaded, and passes PIC init bit
     i686_outb(PIC1_COMMAND_PORT, PIC_ICW1_ICW4 | PIC_ICW1_INIT);
@@ -79,64 +89,67 @@ void i686_PIC_Config(uint8_t offsetPIC1, uint8_t offsetPIC2) {
     i686_outb(PIC2_DATA_PORT, PIC_ICW4_8086 | PIC_ICW4_AUTO_EOI);
     i686_io_wait();
 
-    // clear data registers
-    i686_outb(PIC1_DATA_PORT, 0);
-    i686_io_wait();
-    i686_outb(PIC2_DATA_PORT, 0);
-    i686_io_wait();
+    // mask all interrupts until they are enabled by device drivers
+    i8259_SetMask(0xFFFF);
 }
 
-void i686_PIC_Mask(int irq) {
-    if (irq < 8) {
-        // read current mask of PIC
-        uint8_t mask = i686_inb(PIC1_DATA_PORT);
-        i686_outb(PIC1_DATA_PORT, mask | (1 << irq));
-    }
-    else {
-        irq -= 8;
-        // read current mask of PIC
-        uint8_t mask = i686_inb(PIC2_DATA_PORT);
-        i686_outb(PIC2_DATA_PORT, mask | (1 << irq));
-    }
+void i8259_Mask(int irq) {
+    i8259_SetMask(g_PICMask | (1 << irq));
 }
 
-void i686_PIC_Unmask(int irq) {
-    uint8_t mask;
-    if (irq < 8) {
-        // read current mask of PIC
-        mask = i686_inb(PIC1_DATA_PORT);
-        i686_outb(PIC1_DATA_PORT, mask & ~(1 << irq));
-    }
-    else {
-        irq -= 8;
-        // read current mask of PIC
-        mask = i686_inb(PIC2_DATA_PORT);
-        i686_outb(PIC2_DATA_PORT, mask & ~(1 << irq));
-    }
+void i8259_Unmask(int irq) {
+    i8259_SetMask(g_PICMask & ~(1 << irq));
 }
 
-void i686_PIC_SendEndOfInt(int irq) {
+void i8259_SendEndOfInt(int irq) {
     // if interrupt is from PIC2, send EOI to both PICs
     if (irq >= 8) i686_outb(PIC2_COMMAND_PORT, PIC_CMD_EOI);
     i686_outb(PIC1_COMMAND_PORT, PIC_CMD_EOI);
 }
 
-// if using APIC, you can disable the legacy PIC with this function
-void i686_PIC_Disable() {
-    i686_outb(PIC1_DATA_PORT, 0xFF);
-    i686_io_wait();
-    i686_outb(PIC2_DATA_PORT, 0xFF);
-    i686_io_wait();
+// if using APIC, you can disable the legacy PIC with this function. May also be used to mask the PIC
+void i8259_Disable() {
+    i8259_SetMask(0xFFFF);
 }
 
-uint16_t i686_PIC_ReadIRQRequestRegister() {
+uint16_t i8259_GetMask() {
+    // PIC1 should be on lower half so OR with PIC2 shifted left 8 bits
+    return i686_inb(PIC1_DATA_PORT) | (i686_inb(PIC2_DATA_PORT) << 8);
+}
+
+
+uint16_t i8259_ReadIRQRequestRegister() {
     i686_outb(PIC1_COMMAND_PORT, PIC_CMD_READ_IRR);
     i686_outb(PIC2_COMMAND_PORT, PIC_CMD_READ_IRR);
     return i686_inb(PIC2_COMMAND_PORT) | (i686_inb(PIC1_COMMAND_PORT) << 8);
 }
 
-uint16_t i686_PIC_ReadInServiceRegister() {
+uint16_t i8259_ReadInServiceRegister() {
     i686_outb(PIC1_COMMAND_PORT, PIC_CMD_READ_ISR);
     i686_outb(PIC2_COMMAND_PORT, PIC_CMD_READ_ISR);
     return i686_inb(PIC2_COMMAND_PORT) | (i686_inb(PIC1_COMMAND_PORT) << 8);
+}
+
+// confirms device is working
+bool i8259_Probe() {
+    // disable everything
+    i8259_Disable();
+    // magic number
+    i8259_SetMask(0x1337);
+    // if device is working we'll get true, false otherwise
+    return i8259_GetMask() == 0x1337;
+}
+
+static const PICDriver g_PICDriver  = {
+    .Name = "8259A PIC",
+    .SendEndOfInt = i8259_SendEndOfInt,
+    .Probe = &i8259_Probe,
+    .Initialize = &i8259_Config,
+    .Disable = i8259_Disable,
+    .Mask = i8259_Mask,
+    .Unmask = i8259_Unmask
+};
+
+const PICDriver* i8259_GetDriver() {
+    return &g_PICDriver;
 }

@@ -1,4 +1,6 @@
-test.txt
-stage2_old/
-/Toolchain/
+/Toolchain
 /build
+/legacy
+/run/run_img.sh
+/iso
+/src/graphics_sandbox

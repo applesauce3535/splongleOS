@@ -1,11 +1,14 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 
-void i686_PIC_Config(uint8_t offsetPIC1, uint8_t offsetPIC2);
-void i686_PIC_Mask(int irq);
-void i686_PIC_Unmask(int irq);
-void i686_PIC_SendEndOfInt(int irq);
-void i686_PIC_Disable();
-uint16_t i686_PIC_ReadIRQRequestRegister();
-uint16_t i686_PIC_ReadInServiceRegister();
+typedef struct {
+    const char* Name;
+    void (*SendEndOfInt)(int irq);
+    bool (*Probe)(void);
+    void (*Initialize)(uint8_t offsetPIC1, uint8_t offsetPIC2);
+    void (*Disable)(void);
+    void (*Mask)(int irq);
+    void (*Unmask)(int irq);
+} PICDriver;

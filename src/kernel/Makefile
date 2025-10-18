@@ -33,20 +33,20 @@ SOURCES_ASM = $(wildcard *.asm) \
 OBJECTS_ASM = $(patsubst %.asm, $(BUILD_DIR)/kernel/asm/%.obj, $(SOURCES_ASM))
 
 
-.PHONY: all kernel kernel_elf clean always
+.PHONY: all kernel_elf clean always
 
-all: kernel kernel_elf
+all: kernel_elf
 
 
 kernel_elf: $(BUILD_DIR)/kernel.elf
 
 $(BUILD_DIR)/kernel.elf: $(OBJECTS_ASM) $(OBJECTS_C)
-	$(TARGET_LD) $(ELF_LINKFLAGS) -Wl,-Map=$(BUILD_DIR)/kernel_elf.map -o $@ $^ $(TARGET_LIBS)
+	$(TARGET_LD) $(ELF_LINKFLAGS) -Wl,-Map=$(BUILD_DIR)/kernel.map -o $@ $^ $(TARGET_LIBS)
 
-kernel: $(BUILD_DIR)/kernel.bin
+# kernel: $(BUILD_DIR)/kernel.bin
 
-$(BUILD_DIR)/kernel.bin: $(OBJECTS_ASM) $(OBJECTS_C)
-	$(TARGET_LD) $(TARGET_LINKFLAGS) -Wl,-Map=$(BUILD_DIR)/kernel.map -o $@ $^ $(TARGET_LIBS)
+# $(BUILD_DIR)/kernel.bin: $(OBJECTS_ASM) $(OBJECTS_C)
+# 	$(TARGET_LD) $(TARGET_LINKFLAGS) -Wl,-Map=$(BUILD_DIR)/kernel.map -o $@ $^ $(TARGET_LIBS)
 
 $(BUILD_DIR)/kernel/c/%.obj: %.c $(HEADERS_C)
 	mkdir -p $(dir $@)
@@ -64,4 +64,4 @@ always:
 	mkdir -p $(BUILD_DIR)/kernel/asm
 
 clean:
-	rm -f $(BUILD_DIR)/kernel.bin
+	rm -f $(BUILD_DIR)/kernel.elf

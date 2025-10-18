@@ -1,0 +1,1 @@
+qemu-system-i386 -hda build/splongleOS_hdd.img -m 512 -serial stdio

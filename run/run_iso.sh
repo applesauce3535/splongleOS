@@ -1,0 +1,1 @@
+qemu-system-i386 -cdrom build/splongleOS.iso -m 512 -serial stdio
