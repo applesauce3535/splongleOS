@@ -1,5 +1,8 @@
 #pragma once
 #include <stdint.h>
+
+#define ASMCALL __attribute__((cdecl))
+
 typedef enum {
     IDT_FLAG_GATE_TASK              = 0x5,
     IDT_FLAG_GATE_16BIT_INT         = 0x6,  // an interrupt means the next instruction will be saved

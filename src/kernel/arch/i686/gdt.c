@@ -81,7 +81,7 @@ GDTEntry g_GDT[] = {
 
 GDTDescriptor g_GDTDescriptor = { sizeof(g_GDT) - 1, g_GDT };
 
-void __attribute__((cdecl)) i686_GDT_load(GDTDescriptor* descriptor, uint16_t codeSegment, uint16_t dataSegment);
+void ASMCALL i686_GDT_load(GDTDescriptor* descriptor, uint16_t codeSegment, uint16_t dataSegment);
 
 void i686_GDT_Initialize() {
     i686_GDT_load(&g_GDTDescriptor, i686_GDT_CODE_SEGMENT, i686_GDT_DATA_SEGMENT);

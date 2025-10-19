@@ -21,7 +21,7 @@ IDTEntry g_IDT[256];
 
 IDTDescriptor g_IDTDescriptor = { sizeof(g_IDT)-1, g_IDT};
 
-void __attribute__((cdecl)) i686_IDT_Load(IDTDescriptor* idtDescriptor);
+void ASMCALL i686_IDT_Load(IDTDescriptor* idtDescriptor);
 
 void i686_IDT_SetGate(int interrupt, void* base, uint16_t segmentDescriptor, uint8_t flags) {
     g_IDT[interrupt].BaseLow = ((uint32_t)base) & 0xFFFF;

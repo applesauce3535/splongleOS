@@ -1,6 +1,6 @@
 [bits 32]
 
-;void __attribute__((cdecl)) i686_IDT_Load(IDTDescriptor* idtDescriptor);
+;void ASMCALL i686_IDT_Load(IDTDescriptor* idtDescriptor);
 
 global i686_IDT_Load
 i686_IDT_Load:

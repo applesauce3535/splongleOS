@@ -1,6 +1,8 @@
 #pragma once
 #include <stdint.h>
 
+#define ASMCALL __attribute__((cdecl))
+
 typedef struct {
     // in the reverse order they are pushed
     uint32_t ds;                                            // data segment push

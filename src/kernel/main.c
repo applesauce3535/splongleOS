@@ -1,8 +1,10 @@
 #include <stdint.h>
+#include <stddef.h>
 #include "stdio.h"
 #include "memory.h"
 #include "hal/hal.h"
 #include "arch/i686/irq.h"
+#include "multiboot.h"
 
 void crash_me();
 
@@ -10,18 +12,66 @@ void timer(Registers* regs) {
     printk(".");
 }
 
+void parse_multiboot_memmap(multiboot_info_t* mbinfo);
+
 extern uint8_t __bss_start;
 extern uint8_t __end;
+extern uint8_t phys;
 
-void __attribute__((section(".entry"))) start(uint16_t bootDrive) {
-    memset(&__bss_start, 0, (uint16_t)((&__end) - (&__bss_start)));
+void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
+    // clear bss segment
+    memset(&__bss_start, 0, (size_t)(&__end - &__bss_start));
     HAL_Init();
+    printk("All hardware initialized\n");
     printk("Hello world from splongleOS kernel\n");
 
-    i686_IRQ_RegisterHandler(0, timer);
+    if (magic == MULTIBOOT_BOOTLOADER_MAGIC) {
+        printk("Booted by Multiboot (magic ok)\n");
+        // print all detected memory
+        parse_multiboot_memmap(mbinfo);
+        // also print memory occupied by kernel
+        printk("Kernel starts at 0x%x, ends at 0x%x, occupies 0x%x amount of space. Don't override this\n", &phys, &__end, &__end-&phys);
+    } else {
+        // something went wrong, display incorrect multiboot magic number
+        printk("Not booted by Multiboot: magic=0x%x\n", magic);
+    }
+
+    // i686_IRQ_RegisterHandler(0, timer);
 
     // crash_me();
 
     end:
         for (;;);
+}
+
+void parse_multiboot_memmap(multiboot_info_t* mbinfo) {
+    // check if the multiboot memory map failed
+    if (!(mbinfo->flags & MULTIBOOT_INFO_MEM_MAP)) {
+        printk("No multiboot memory map; mem_lower=%u mem_upper=%u\n",
+               mbinfo->mem_lower, mbinfo->mem_upper);
+        return;
+    }
+
+    // get entire length of memeory map from GRUB
+    uint32_t mmap_len = mbinfo->mmap_length;
+    // get base address of mmap buffer
+    uintptr_t mmap_addr = (uintptr_t)mbinfo->mmap_addr;
+    // offset inside mmap buffer, increments by size of each entry
+    uintptr_t offset = 0;
+
+    while (offset < mmap_len) {
+        // for each entry add offset to base mmap address
+        multiboot_memory_map_t* entry = (multiboot_memory_map_t*)(mmap_addr + offset);
+        // get the base address, length, and type (free/occupied) for each entry
+        uint64_t base = entry->addr;
+        uint64_t length = entry->len;
+        uint32_t type = entry->type;
+
+        // print each entry nicely
+        printk("mmap: base=0x%llx len=0x%llx type=%u\n", base, length, type);
+
+        // go to next record, entry->size is the bytes AFTER size field, so to get full entry we must
+        // also add the size of entry->size
+        offset += entry->size + sizeof(entry->size);
+    }
 }

@@ -1,6 +1,6 @@
 [bits 32]
 
-;void __attribute__((cdecl)) i686_GDT_load(GDTDescriptor* descriptor, uint16_t codeSegment, uint16_t dataSegment);
+;void ASMCALL i686_GDT_load(GDTDescriptor* descriptor, uint16_t codeSegment, uint16_t dataSegment);
 global i686_GDT_load
 i686_GDT_load:
     ; make new call frame
