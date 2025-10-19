@@ -108,6 +108,19 @@ void putc(char c) {
     setcursor(g_ScreenX, g_ScreenY);
 }
 
+// delete a character
+void eatc() {
+    if (g_ScreenX > 0) {
+        g_ScreenX -= 1;
+    }
+    else {
+        g_ScreenX = SCREEN_WIDTH;
+        g_ScreenY -= 1;
+    }
+    setcursor(g_ScreenX, g_ScreenY);
+    putchr(g_ScreenX, g_ScreenY, ' ');
+}
+
 /*
 writes a string to the output hardware
 

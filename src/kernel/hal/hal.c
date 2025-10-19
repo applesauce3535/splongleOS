@@ -3,7 +3,10 @@
 #include "arch/i686/idt.h"
 #include "arch/i686/isr.h"
 #include "arch/i686/irq.h"
+#include "arch/i686/pic.h"
+#include "dev/keyboard.h"
 #include "stdio.h"
+
 
 
 void HAL_Init() {
@@ -15,4 +18,6 @@ void HAL_Init() {
     printk("ISR initialized\n");
     i686_IRQ_Init();
     printk("IRQ initialized\n");
+    Keyboard_Init();
+    printk("Keyboard initialized\n");
 }

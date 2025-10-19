@@ -30,7 +30,7 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
         // print all detected memory
         parse_multiboot_memmap(mbinfo);
         // also print memory occupied by kernel
-        printk("Kernel starts at 0x%x, ends at 0x%x, occupies 0x%x amount of space. Don't override this\n", &phys, &__end, &__end-&phys);
+        printk("Kernel starts at 0x%x, ends at 0x%x, occupies 0x%x amount of space.\nDon't override this\n", &phys, &__end, &__end-&phys);
     } else {
         // something went wrong, display incorrect multiboot magic number
         printk("Not booted by Multiboot: magic=0x%x\n", magic);
@@ -67,8 +67,9 @@ void parse_multiboot_memmap(multiboot_info_t* mbinfo) {
         uint64_t length = entry->len;
         uint32_t type = entry->type;
 
+        // FIXME: size isn't printing correctly
         // print each entry nicely
-        printk("mmap: base=0x%llx len=0x%llx type=%u\n", base, length, type);
+        printk("mmap: base=0x%llx len=0x%llx size=0x%x type=%u\n", base, length, entry->size, type);
 
         // go to next record, entry->size is the bytes AFTER size field, so to get full entry we must
         // also add the size of entry->size
