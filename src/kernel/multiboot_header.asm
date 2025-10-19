@@ -5,7 +5,7 @@ SECTION .multiboot
 align 4
 ; magic, flags, checksum
 dd 0x1BADB002   ; multiboot header identifier magic number
-dd 0x00000003   ; GRUB flags, aligning all boot modules and passing mem info to kernel
+dd 0x00000003   ; 0x1 | 0x2 => align modules, memory info (do NOT request drive info here)
 dd -(0x1BADB002 + 0x00000003)   ; must make the sum of all 3 fields equal 0
 
 ; Ensure the header is in the output so linkers don't discard it

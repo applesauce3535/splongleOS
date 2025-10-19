@@ -13,6 +13,7 @@ void timer(Registers* regs) {
 }
 
 void parse_multiboot_memmap(multiboot_info_t* mbinfo);
+void parse_multiboot_driveinfo(multiboot_info_t* mbinfo);
 
 extern uint8_t __bss_start;
 extern uint8_t __end;
@@ -23,7 +24,6 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
     memset(&__bss_start, 0, (size_t)(&__end - &__bss_start));
     HAL_Init();
     printk("All hardware initialized\n");
-    printk("Hello world from splongleOS kernel\n");
 
     if (magic == MULTIBOOT_BOOTLOADER_MAGIC) {
         printk("Booted by Multiboot (magic ok)\n");
@@ -31,6 +31,8 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
         parse_multiboot_memmap(mbinfo);
         // also print memory occupied by kernel
         printk("Kernel starts at 0x%x, ends at 0x%x, occupies 0x%x amount of space.\nDon't override this\n", &phys, &__end, &__end-&phys);
+        // print drive info
+        parse_multiboot_driveinfo(mbinfo);
     } else {
         // something went wrong, display incorrect multiboot magic number
         printk("Not booted by Multiboot: magic=0x%x\n", magic);
@@ -42,6 +44,39 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
 
     end:
         for (;;);
+}
+
+void parse_multiboot_driveinfo(multiboot_info_t* mbinfo) {
+    // check if the drive info failed
+    if (!(mbinfo->flags & MULTIBOOT_INFO_DRIVE_INFO)) {
+        printk("ERROR: No drive info available\n");
+        return;
+    }
+
+    /* get the full range of info for the drive list. Use uintptr_t so
+       pointer arithmetic is correct on the target. */
+    uintptr_t addr = (uintptr_t)mbinfo->drives_addr;
+    uintptr_t end = addr + (uintptr_t)mbinfo->drives_length;
+
+    while (addr < end) {
+        // recast addr as a pointer to drive struct and assign to drive
+        multiboot_drive_t* drive = (multiboot_drive_t*)addr;
+
+        // print drive info nicely
+        printk("Drive 0x%x: mode=%d, C/H/S: %d/%d/%d\n",
+            drive->drive_number,
+            drive->drive_mode,
+            drive->drive_cylinders,
+            drive->drive_heads,
+            drive->drive_sectors);
+
+        // advance to the next drive
+        if (drive->size == 0) {
+            printk("ERROR: drive entry with size=0, aborting parse\n");
+            break;
+        }
+        addr += (uintptr_t)drive->size;
+    }
 }
 
 void parse_multiboot_memmap(multiboot_info_t* mbinfo) {

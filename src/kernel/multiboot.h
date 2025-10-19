@@ -270,6 +270,19 @@ struct multiboot_apm_info
   multiboot_uint16_t dseg_len;
 };
 
+typedef struct multiboot_drive {
+    uint32_t size;         // Size of this structure
+    uint8_t drive_number;  // BIOS drive number (e.g., 0x80 for first hard disk)
+    uint8_t drive_mode;    // Drive mode (0 = CHS, 1 = LBA)
+    uint16_t drive_cylinders;
+    uint8_t drive_heads;
+    uint8_t drive_sectors;
+    // This is followed by a variable-length array of port I/O addresses.
+    // You must use the 'size' field to skip to the next entry.
+    uint16_t ports[0];     // Variable-sized; length = (size - sizeof(header)) / 2
+} __attribute__((packed)) multiboot_drive_t;
+
+
 #endif /* ! ASM_FILE */
 
 #endif /* ! MULTIBOOT_HEADER */
