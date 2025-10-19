@@ -1,4 +1,6 @@
+#include <stdio.h>
 #include "hal.h"
+#include "memory/memman.h"
 #include "arch/i686/gdt.h"
 #include "arch/i686/idt.h"
 #include "arch/i686/isr.h"
@@ -9,7 +11,7 @@
 
 
 
-void HAL_Init() {
+void HAL_Init(uint32_t memHigh, uint32_t allocStart) {
     i686_GDT_Initialize();
     printk("GDT initialized\n");
     i686_IDT_Initialize();
@@ -20,4 +22,6 @@ void HAL_Init() {
     printk("IRQ initialized\n");
     Keyboard_Init();
     printk("Keyboard initialized\n");
+    Memory_Init(memHigh, allocStart);
+    printk("Memory initialized\n");
 }

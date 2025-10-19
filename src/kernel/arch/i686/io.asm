@@ -26,6 +26,14 @@ i686_DisableInts:
     cli
     ret
 
+global i686_InvalidatePage
+i686_InvalidatePage:
+    [bits 32]
+    ; load the page linear address argument (first cdecl arg at [esp+4])
+    mov eax, [esp + 4]
+    invlpg [eax]
+    ret
+
 global i686_panic
 i686_panic:
     cli
