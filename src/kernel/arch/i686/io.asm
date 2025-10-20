@@ -1,4 +1,4 @@
-; simple assembly wrappers
+; these are just a wrapper for reading and writing to ports
 
 global i686_outb
 i686_outb:
@@ -24,24 +24,6 @@ i686_EnableInts:
 global i686_DisableInts
 i686_DisableInts:
     cli
-    ret
-
-global i686_InvalidatePage
-i686_InvalidatePage:
-    [bits 32]
-    mov eax, [esp + 4]
-    invlpg [eax]
-    ret
-
-global i686_GetPage
-i686_GetPage:
-    mov eax, cr3
-    ret
-
-global i686_ChangePage
-i686_ChangePage:
-    mov eax, [esp + 4]
-    mov cr3, eax
     ret
 
 global i686_panic

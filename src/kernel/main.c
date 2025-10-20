@@ -15,25 +15,22 @@ void timer(Registers* regs) {
 void parse_multiboot_memmap(multiboot_info_t* mbinfo);
 void parse_multiboot_driveinfo(multiboot_info_t* mbinfo);
 
-extern uint8_t _kernel_end;
+extern uint8_t __bss_start;
+extern uint8_t __end;
 extern uint8_t phys;
 
 void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
-    uint32_t mod1 = *(uint32_t*)(mbinfo->mods_addr + 4);
-    uint32_t physicalAllocStart = (mod1 + 0xFFF) & ~0xFFF;
-    HAL_Init(mbinfo->mem_upper * 1024, physicalAllocStart);
+    HAL_Init();
     printk("All hardware initialized\n");
 
     if (magic == MULTIBOOT_BOOTLOADER_MAGIC) {
         printk("Booted by Multiboot (magic ok)\n");
-        // int* poop = 0x0;
-        // printk("%d", *poop);        // force page fault
         // print all detected memory
-        // parse_multiboot_memmap(mbinfo);
+        parse_multiboot_memmap(mbinfo);
         // also print memory occupied by kernel
-        // printk("Kernel starts at 0x%x, ends at 0x%x, occupies 0x%x amount of space.\nDon't override this\n", &phys, &_kernel_end, &_kernel_end-&phys);
+        printk("Kernel starts at 0x%x, ends at 0x%x, occupies 0x%x amount of space.\nDon't override this\n", &phys, &__end, &__end-&phys);
         // print drive info
-        // parse_multiboot_driveinfo(mbinfo);
+        parse_multiboot_driveinfo(mbinfo);
     } else {
         // something went wrong, display incorrect multiboot magic number
         printk("Not booted by Multiboot: magic=0x%x\n", magic);
