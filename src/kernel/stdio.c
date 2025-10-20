@@ -113,12 +113,54 @@ void eatc() {
     if (g_ScreenX > 0) {
         g_ScreenX -= 1;
     }
+    else if (g_ScreenX == 0 && g_ScreenY == 0) return;
     else {
         g_ScreenX = SCREEN_WIDTH;
         g_ScreenY -= 1;
     }
     setcursor(g_ScreenX, g_ScreenY);
     putchr(g_ScreenX, g_ScreenY, ' ');
+}
+
+void movecursor(uint32_t scancode) {
+
+    // up arrow
+    if (scancode == 72 && g_ScreenY > 0) {
+        setcursor(g_ScreenX, g_ScreenY-1);
+    }
+    else if (scancode == 72 && g_ScreenY == 0) {
+        return;
+    }
+
+    // left arrow
+    else if (scancode == 75 && g_ScreenX > 0) {
+        setcursor(g_ScreenX-1, g_ScreenY);
+    }
+    else if (scancode == 75 && g_ScreenX == 0) {
+        setcursor(SCREEN_WIDTH, g_ScreenY-1);
+    }
+    else if (scancode == 75 && g_ScreenX == 0 && g_ScreenY == 0) {
+        return;
+    }
+
+    // right arrow
+    else if (scancode == 77 && g_ScreenX < SCREEN_WIDTH) {
+        setcursor(g_ScreenX+1, g_ScreenY);
+    }
+    else if (scancode == 77 && g_ScreenX == SCREEN_WIDTH) {
+        setcursor(0, g_ScreenY+1);
+    }
+    else if (scancode == 77 && g_ScreenX == SCREEN_WIDTH && g_ScreenY == SCREEN_HEIGHT) {
+        return;
+    }
+
+    // down arrow
+    else if (scancode == 80 && g_ScreenY < SCREEN_HEIGHT) {
+        setcursor(g_ScreenX, g_ScreenY-1);
+    }
+    else if (scancode == 80 && g_ScreenY == SCREEN_HEIGHT) {
+        return;
+    }
 }
 
 /*

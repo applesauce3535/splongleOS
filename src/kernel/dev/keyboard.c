@@ -94,6 +94,9 @@ void keyboardHandler(Registers* regs) {
         case 66:
         case 67:
         case 68:            // functions keys end
+        case 75:
+            movecursor(scancode);
+            break;
         case 87:
         case 88:
             break;
