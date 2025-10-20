@@ -14,4 +14,8 @@ void i686_io_wait();
 
 void ASMCALL i686_InvalidatePage(uint32_t page);
 
+uint32_t ASMCALL i686_GetPage();
+
+void ASMCALL i686_ChangePage(uint32_t pd);
+
 void ASMCALL i686_panic();

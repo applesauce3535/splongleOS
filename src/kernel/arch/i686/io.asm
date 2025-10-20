@@ -1,4 +1,4 @@
-; these are just a wrapper for reading and writing to ports
+; simple assembly wrappers
 
 global i686_outb
 i686_outb:
@@ -29,9 +29,19 @@ i686_DisableInts:
 global i686_InvalidatePage
 i686_InvalidatePage:
     [bits 32]
-    ; load the page linear address argument (first cdecl arg at [esp+4])
     mov eax, [esp + 4]
     invlpg [eax]
+    ret
+
+global i686_GetPage
+i686_GetPage:
+    mov eax, cr3
+    ret
+
+global i686_ChangePage
+i686_ChangePage:
+    mov eax, [esp + 4]
+    mov cr3, eax
     ret
 
 global i686_panic

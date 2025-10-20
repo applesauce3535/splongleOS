@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "hal.h"
 #include "memory/memman.h"
+#include "memory/kmalloc.h"
 #include "arch/i686/gdt.h"
 #include "arch/i686/idt.h"
 #include "arch/i686/isr.h"
@@ -24,4 +25,6 @@ void HAL_Init(uint32_t memHigh, uint32_t allocStart) {
     printk("Keyboard initialized\n");
     Memory_Init(memHigh, allocStart);
     printk("Memory initialized\n");
+    // Kmalloc_Init(0x10000);
+    // printk("Kernel memory allocated\n");
 }

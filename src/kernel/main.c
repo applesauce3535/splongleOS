@@ -2,7 +2,6 @@
 #include <stddef.h>
 #include "stdio.h"
 #include "memory.h"
-#include "memory/memman.h"
 #include "hal/hal.h"
 #include "arch/i686/irq.h"
 #include "multiboot.h"
@@ -20,30 +19,17 @@ extern uint8_t _kernel_end;
 extern uint8_t phys;
 
 void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
-    // multiboot gives physical addresses; convert to kernel virtual addresses
-    // (kernel is mapped at KERNEL_START) before dereferencing
-    uint8_t* mods_addr_virt = (uint8_t*)( (uintptr_t)mbinfo->mods_addr + KERNEL_START );
-    uint32_t mod1 = *(uint32_t*)(mods_addr_virt + 4);
+    uint32_t mod1 = *(uint32_t*)(mbinfo->mods_addr + 4);
     uint32_t physicalAllocStart = (mod1 + 0xFFF) & ~0xFFF;
     HAL_Init(mbinfo->mem_upper * 1024, physicalAllocStart);
     printk("All hardware initialized\n");
 
     if (magic == MULTIBOOT_BOOTLOADER_MAGIC) {
         printk("Booted by Multiboot (magic ok)\n");
-
-        // ensure multiboot buffers are mapped into the higher-half before use
-        // map multiboot physical buffers (mmap, modules, drives) into the
-        // kernel virtual space so dereferencing won't page-fault
-        extern void map_physical_range(uint32_t phys_start, uint32_t length, uint32_t* allocStart);
-        if (mbinfo->mmap_length && mbinfo->mmap_addr)
-            map_physical_range((uint32_t)mbinfo->mmap_addr, mbinfo->mmap_length, &physicalAllocStart);
-        if (mbinfo->mods_count && mbinfo->mods_addr)
-            map_physical_range((uint32_t)mbinfo->mods_addr, mbinfo->mods_count * sizeof(uint32_t) * 2, &physicalAllocStart);
-        if (mbinfo->drives_length && mbinfo->drives_addr)
-            map_physical_range((uint32_t)mbinfo->drives_addr, mbinfo->drives_length, &physicalAllocStart);
-
+        // int* poop = 0x0;
+        // printk("%d", *poop);        // force page fault
         // print all detected memory
-        parse_multiboot_memmap(mbinfo);
+        // parse_multiboot_memmap(mbinfo);
         // also print memory occupied by kernel
         // printk("Kernel starts at 0x%x, ends at 0x%x, occupies 0x%x amount of space.\nDon't override this\n", &phys, &_kernel_end, &_kernel_end-&phys);
         // print drive info
@@ -68,8 +54,9 @@ void parse_multiboot_driveinfo(multiboot_info_t* mbinfo) {
         return;
     }
 
-    // convert physical drive buffer pointer to kernel virtual
-    uintptr_t addr = (uintptr_t)mbinfo->drives_addr + KERNEL_START;
+    /* get the full range of info for the drive list. Use uintptr_t so
+       pointer arithmetic is correct on the target. */
+    uintptr_t addr = (uintptr_t)mbinfo->drives_addr;
     uintptr_t end = addr + (uintptr_t)mbinfo->drives_length;
 
     while (addr < end) {
@@ -104,8 +91,7 @@ void parse_multiboot_memmap(multiboot_info_t* mbinfo) {
     // get entire length of memeory map from GRUB
     uint32_t mmap_len = mbinfo->mmap_length;
     // get base address of mmap buffer
-    // multiboot mmap pointer is physical; convert to kernel virtual address
-    uintptr_t mmap_addr = (uintptr_t)mbinfo->mmap_addr + KERNEL_START;
+    uintptr_t mmap_addr = (uintptr_t)mbinfo->mmap_addr;
     // offset inside mmap buffer, increments by size of each entry
     uintptr_t offset = 0;
 
