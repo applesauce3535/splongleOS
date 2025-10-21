@@ -1,5 +1,7 @@
 Toolchain/
-/build
+/build/kernel
+/build/kernel.elf
+/build/kernel.map
 /legacy
 /run/run_img.sh
 /iso
