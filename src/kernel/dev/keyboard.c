@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdbool.h>
-#include "arch/i686/io.h"
+#include "arch/i686/asm_wrappers.h"
 #include "arch/i686/irq.h"
 #include "stdio.h"
 #include "keyboard.h"

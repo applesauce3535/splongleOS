@@ -1,8 +1,6 @@
-/Toolchain
+Toolchain/
 /build
 /legacy
 /run/run_img.sh
 /iso
 /src/graphics_sandbox
-bochs
-bx_enh_dbg.ini

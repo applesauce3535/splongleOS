@@ -34,9 +34,8 @@ void parse_multiboot_memmap(multiboot_info_t* mbinfo) {
 
         if (type == 1) free_mem += length;
 
-        // FIXME: size isn't printing correctly
         // print each entry nicely
-        printk("mmap: base=0x%llx len=0x%llx size=0x%x type=%u\n", base, length, entry->size, type);
+        printk("mmap: base=0x%llx len=0x%llx type=%u\n", base, length, type);
 
         // go to next record, entry->size is the bytes AFTER size field, so to get full entry we must
         // also add the size of entry->size
@@ -46,7 +45,7 @@ void parse_multiboot_memmap(multiboot_info_t* mbinfo) {
         (unsigned long long)(total_mem / 4096), (unsigned long long)((total_mem - free_mem) / 4096), (unsigned long long)(free_mem / 4096));
 }
 
-uint32_t get_total_mem(multiboot_info_t* mbinfo) {
+uint64_t get_total_mem(multiboot_info_t* mbinfo) {
     if (!(mbinfo->flags & MULTIBOOT_INFO_MEM_MAP)) {
         printk("No multiboot memory map; mem_lower=%u mem_upper=%u\n",
                mbinfo->mem_lower, mbinfo->mem_upper);

@@ -1,7 +1,7 @@
 #include "irq.h"
 #include "i8259.h"
 #include "pic.h"
-#include "io.h"
+#include "asm_wrappers.h"
 #include "stdio.h"
 #include "util/arrays.h"
 #include <stddef.h>

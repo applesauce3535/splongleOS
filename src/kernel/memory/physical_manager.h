@@ -24,10 +24,10 @@ bool check_block(uint32_t bit);
 int32_t find_first_free_block(uint32_t num_blocks);
 
 // initialize memory manager given an address and size to put the mmap
-void Memory_Manager_Init(uint32_t address, uint32_t size);
+void Memory_Manager_Init(uint32_t address, uint64_t size);
 
 // initialize region of memory as free
-void initialize_region(uint32_t base, uint32_t size);
+void initialize_region(uint32_t base, uint64_t size);
 
 // initialize region of memory as used
 void deinitialize_region(uint32_t base, uint32_t size);

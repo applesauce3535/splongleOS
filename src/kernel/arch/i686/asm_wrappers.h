@@ -12,4 +12,9 @@ uint8_t ASMCALL i686_DisableInts();
 // just writes something to an unused port
 void ASMCALL i686_io_wait();
 
+// lock system
 void ASMCALL i686_panic();
+
+void ASMCALL i686_InvalidatePage(uint32_t page);
+void ASMCALL i686_ChangePD(uint32_t pd);
+void ASMCALL i686_EnablePaging();

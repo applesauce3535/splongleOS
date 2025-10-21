@@ -56,7 +56,11 @@ int32_t find_first_free_block(uint32_t num_blocks) {
     return -1;
 }
 
-void Memory_Manager_Init(uint32_t address, uint32_t size) {
+void Memory_Manager_Init(uint32_t address, uint64_t size) {
+    // limit 4GB addressable phys memory
+    if ((uint64_t)size >= 0x100000000) {
+        size = 0xFFFFFFFF;
+    }
     // place the map at the address
     g_memoryMap = (uint32_t*)address;
 
@@ -66,7 +70,10 @@ void Memory_Manager_Init(uint32_t address, uint32_t size) {
     memset(g_memoryMap, 0xFF, g_maxBlocks / BLOCKS_PER_BYTE);
 }
 
-void initialize_region(uint32_t base, uint32_t size) {
+void initialize_region(uint32_t base, uint64_t size) {
+    if ((uint64_t)base + size >= 0x100000000ULL) {
+        size = 0xFFFFFFFF - base;
+    }
     // convert phys address to blocks
     uint32_t align = base / BLOCK_SIZE;
 

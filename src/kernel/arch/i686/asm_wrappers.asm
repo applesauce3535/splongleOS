@@ -26,6 +26,29 @@ i686_DisableInts:
     cli
     ret
 
+global i686_InvalidatePage
+i686_InvalidatePage:
+    cli
+    mov eax, [esp + 4]
+    invlpg [eax]
+    sti
+    ret
+
+global i686_ChangePD
+i686_ChangePD:
+    cli
+    mov eax, [esp + 4]
+    mov cr3, eax
+    sti
+    ret
+
+global i686_EnablePaging
+i686_EnablePaging:
+    mov eax, cr0
+    or eax, 0x80000000
+    mov cr0, eax
+    ret
+
 global i686_panic
 i686_panic:
     cli
