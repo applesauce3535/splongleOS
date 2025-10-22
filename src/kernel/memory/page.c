@@ -64,10 +64,10 @@ bool map_page(void* phys, void* virt) {
     // get page
     page_directory* pd = g_currentPD;
     // get PT
-    pd_entry* pte = &pd->entries[PD_INDEX((uint32_t)virt)];
+    pd_entry* pde = &pd->entries[PD_INDEX((uint32_t)virt)];
 
     // is it present?
-    if ((*pte & PTE_PRESENT) != PTE_PRESENT) {
+    if ((*pde & PDE_PRESENT) != PDE_PRESENT) {
         // get that thang some dind dang memory
         page_table* table = (page_table*)allocate_blocks(1);
         if (!table) return false;   // oops, out of memory
@@ -82,12 +82,13 @@ bool map_page(void* phys, void* virt) {
         SET_FRAME(pde, (phys_addr)table);
     }
     // get PT phys
-    page_table* pt = (page_table*)PAGE_PHYS_ADDR(pte);
+    page_table* pt = (page_table*)PAGE_PHYS_ADDR(pde);
     // get the page
     pt_entry* page = &pt->entries[PT_INDEX((uint32_t)virt)];
     // map in page
     SET_ATTR(page, PTE_PRESENT);
     SET_FRAME(page, (uint32_t)phys);
+    flush_tlb_entry((virt_addr)virt);
     return true;    // success!
 }
 
@@ -148,13 +149,43 @@ bool Page_Manager_Init(void) {
 
     // enable paging: set PG (bit 31) of CR0
     i686_EnablePaging();
-    // i686_ISR_RegisterHandler(14, &PFHandler);
+    i686_ISR_RegisterHandler(14, &PFHandler);
     return true;
 
 
 }
 
 void PFHandler(Registers* regs) {
-    printk("Page fault nyehehe\n");
-    return;
+    uint32_t bad_addr = i686_ReadCR2();
+    uint32_t ec = regs->error_code;
+
+    bool not_present = !(ec & 1);
+    bool write = (ec & 2);
+    bool user = (ec & 4);
+
+    printk("Page fault at 0x%x, EC: 0x%x\n", bad_addr, ec);
+    printk("  Caused by: %s in %s mode during %s\n",
+        (ec & 0x1) ? "protection violation (page present)" : "non-present page",
+        (ec & 0x4) ? "user" : "kernel",
+        (ec & 0x2) ? "write" : "read");
+
+    if (ec & 0x8)
+        printk("  Reserved bit violation in page directory/table!\n");
+    if (ec & 0x10)
+        printk("  Caused by instruction fetch.\n");
+
+    if (not_present) {
+        void* frame = allocate_blocks(1);
+        if (frame) {        // fail? out of memory, we will have to kick out a page later
+            uintptr_t vpage = bad_addr & ~0xFFF;
+            if (map_page(frame, (void*)vpage)) {
+                printk("Kernel non-present page fault resolved, resuming execution\n");
+                return; // resume
+            }
+        }
+    }
+    // I'm just covering kernel needing non-present page right now
+    // if we reach this point, something went terribly wrong
+    dump_regs(regs);
+    for(;;);
 }

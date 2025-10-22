@@ -30,7 +30,7 @@ void Memory_Manager_Init(uint32_t address, uint64_t size);
 void initialize_region(uint32_t base, uint64_t size);
 
 // initialize region of memory as used
-void deinitialize_region(uint32_t base, uint32_t size);
+void deinitialize_region(uint32_t base, uint64_t size);
 
 // alloc blocks and return phys address of beginning of allocation
 uint32_t* allocate_blocks(uint32_t num_blocks);

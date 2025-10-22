@@ -62,15 +62,15 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
         deinitialize_region(0x00100000, 0x00200000);
         deinitialize_region(MEMMAP_AREA, (total_mem / BLOCK_SIZE) / BLOCKS_PER_BYTE);
         get_block_info();
-        Page_Manager_Init();
-        printk("Paging enabled\n");
+        if (Page_Manager_Init()) printk("Paging enabled\n");
 
         // test page fault
-        // volatile uint32_t* poop = (uint32_t*)0xDEADBEEF;
-        // *poop = 1234;
-
-        // test page mapping
-        test_map_fault();
+        volatile uint32_t* poop = (uint32_t*)0xDEADBEEF;
+        printk("Gonna write poop and cause a page fault\n");
+        // printk("%d\n", *poop);      // kernel read PF
+        // printk("Just printed poop after page faulting it\n");
+        *poop = 1234;               // kernel write PF
+        printk("Just wrote poop after page faulting it\n");
         printk("Hello world from splongleOS\n");
     } 
     else {

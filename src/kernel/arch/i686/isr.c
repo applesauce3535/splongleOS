@@ -78,3 +78,15 @@ void i686_ISR_RegisterHandler(int interrupt, ISRHandler handler) {
     g_ISRHandlers[interrupt] = handler;
     i686_IDT_EnableGate(interrupt);
 }
+
+void dump_regs(Registers* regs) {
+    printk("Dumping regs:\n");
+    
+    printk("  eax=%x  ebx=%x  ecx=%x  edx=%x  esi=%x  edi=%x\n",
+               regs->eax, regs->ebx, regs->ecx, regs->edx, regs->esi, regs->edi);
+
+    printk("  esp=%x  ebp=%x  eip=%x  eflags=%x  cs=%x  ds=%x  ss=%x\n",
+               regs->esp, regs->ebp, regs->eip, regs->eflags, regs->cs, regs->ds, regs->ss);
+
+    printk("  interrupt=%x  errorcode=%x\n", regs->interrupt, regs->error_code);
+}

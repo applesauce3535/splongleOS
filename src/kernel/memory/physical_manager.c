@@ -89,7 +89,10 @@ void initialize_region(uint32_t base, uint64_t size) {
     set_block(0);
 }
 
-void deinitialize_region(uint32_t base, uint32_t size) {
+void deinitialize_region(uint32_t base, uint64_t size) {
+    if ((uint64_t)base + size >= 0x100000000ULL) {
+        size = 0xFFFFFFFF - base;
+    }
     // convert phys address to a block
     uint32_t align = base / BLOCK_SIZE;
 

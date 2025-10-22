@@ -49,6 +49,11 @@ i686_EnablePaging:
     mov cr0, eax
     ret
 
+global i686_ReadCR2
+i686_ReadCR2:
+    mov eax, cr2
+    ret
+
 global i686_panic
 i686_panic:
     cli
