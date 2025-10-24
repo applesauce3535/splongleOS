@@ -174,7 +174,7 @@ void PFHandler(Registers* regs) {
     if (ec & 0x10)
         printk("  Caused by instruction fetch.\n");
 
-    if (not_present) {
+    if (not_present && !user) {
         void* frame = allocate_blocks(1);
         if (frame) {        // fail? out of memory, we will have to kick out a page later
             uintptr_t vpage = bad_addr & ~0xFFF;
@@ -183,6 +183,10 @@ void PFHandler(Registers* regs) {
                 return; // resume
             }
         }
+    }
+
+    if (!not_present && user) {
+        // this is a serious violation of the law! kill this man!
     }
     // I'm just covering kernel needing non-present page right now
     // if we reach this point, something went terribly wrong

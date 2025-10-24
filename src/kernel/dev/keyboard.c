@@ -70,9 +70,18 @@ void Keyboard_Init() {
     i686_IRQ_RegisterHandler(1, &keyboardHandler);
 }
 void keyboardHandler(Registers* regs) {
+    bool extended = false;
     // retrieve data from keyboard
-    char scancode = i686_inb(0x60) & 0x7F;      // what key is pressed
-    char press = i686_inb(0x60) & 0x80;         // was button pressed or released?
+    uint8_t code = i686_inb(0x60);
+    i686_io_wait();
+
+    if (code == 0xE0) {
+        extended = true;
+        return;  // wait for the next byte
+    }
+
+    bool press = code & 0x80;       // was the button pressed or released?
+    uint8_t scancode = code & 0x7F; // what button was it?
 
     switch(scancode) {
         case 1:             // escape
@@ -83,6 +92,10 @@ void keyboardHandler(Registers* regs) {
             if (press == 0) printk("\n");
             break;
         case 29: 
+        case 54:            // right shift
+            if (press == 0) g_capsOn = true;
+            else g_capsOn = false;
+            break;
         case 56:
         case 59:
         case 60:            // function keys
@@ -94,14 +107,23 @@ void keyboardHandler(Registers* regs) {
         case 66:
         case 67:
         case 68:            // functions keys end
+        case 72:
+            if (press == 0) movecursor(scancode);
+            break;
         case 75:
-            movecursor(scancode);
+            if (press == 0) movecursor(scancode);
+            break;
+        case 77:
+            if (press == 0) movecursor(scancode);
+            break;
+        case 80:
+            if (press == 0) movecursor(scancode);
             break;
         case 87:
         case 88:
             break;
         
-        case 42:            // shift
+        case 42:            // left shift
             if (press == 0) g_capsOn = true;
             else g_capsOn = false;
             break;
@@ -120,5 +142,6 @@ void keyboardHandler(Registers* regs) {
             }
     }
     
-    // printk("Scan code: %d, Press: %d\n", scancode, press);
+    // debugging purposes and seeing what each key's scancode is
+    // printk("Scan code: %d, 0x%x, Press: %d\n", scancode, scancode, press);
 }

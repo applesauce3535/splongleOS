@@ -9,7 +9,7 @@ static uint32_t g_maxBlocks = 0;
 static uint32_t g_usedBlocks = 0;
 
 
-void set_block(uint32_t bit) {
+void set_block(int32_t bit) {
     // offset into map by dividing by 32, then shift 1 by passed bit modulo 32 to get the exact bit in the offset
     // finally OR it with the memory map to set the block as being used
     g_memoryMap[bit/32] |= (1 << (bit % 32));
@@ -26,8 +26,8 @@ bool check_block(uint32_t bit) {
     return g_memoryMap[bit/32] & (1 << (bit % 32));
 }
 
-int32_t find_first_free_block(uint32_t num_blocks) {
-    if (num_blocks == 0) return 0;      // why would someone request 0 memory? are they dumb?
+uint64_t find_first_free_block(uint32_t num_blocks) {
+    if (num_blocks == 0) return 0x100000000ULL;      // why would someone request 0 memory? are they dumb?
 
     // test 32 blocks at a time
     for (uint32_t i = 0; i < g_maxBlocks / 32; ++i) {
@@ -53,27 +53,29 @@ int32_t find_first_free_block(uint32_t num_blocks) {
     }
 
     // no free space large enough, oops!
-    return -1;
+    return 0x100000000ULL;
 }
 
 void Memory_Manager_Init(uint32_t address, uint64_t size) {
-    // limit 4GB addressable phys memory
-    if ((uint64_t)size >= 0x100000000) {
-        size = 0xFFFFFFFF;
+     // clamp to 4 GB
+    if (size > 0x100000000ULL) {
+        size = 0x100000000ULL;
     }
     // place the map at the address
     g_memoryMap = (uint32_t*)address;
 
-    g_maxBlocks = size / BLOCK_SIZE;
+    g_maxBlocks = (uint32_t)(size / BLOCK_SIZE);
     g_usedBlocks = g_maxBlocks;         // every block will be set as used initially
     // set all of mmap to 1
     memset(g_memoryMap, 0xFF, g_maxBlocks / BLOCKS_PER_BYTE);
 }
 
 void initialize_region(uint32_t base, uint64_t size) {
-    if ((uint64_t)base + size >= 0x100000000ULL) {
-        size = 0xFFFFFFFF - base;
-    }
+    // limit 4GB
+    if (base >= 0x100000000ULL) return;
+
+    if ((uint64_t)base + size > 0x100000000ULL)
+        size = 0x100000000ULL - base;
     // convert phys address to blocks
     uint32_t align = base / BLOCK_SIZE;
 
@@ -90,9 +92,9 @@ void initialize_region(uint32_t base, uint64_t size) {
 }
 
 void deinitialize_region(uint32_t base, uint64_t size) {
-    if ((uint64_t)base + size >= 0x100000000ULL) {
-        size = 0xFFFFFFFF - base;
-    }
+    if ((uint64_t)base >= 0x100000000ULL) return;
+    
+    if ((uint64_t)base + size > 0x100000000ULL) size = 0x100000000ULL - (uint64_t)base;
     // convert phys address to a block
     uint32_t align = base / BLOCK_SIZE;
 
@@ -111,10 +113,10 @@ uint32_t* allocate_blocks(uint32_t num_blocks) {
         // not enough blocks
         return 0;
     }
-    uint32_t starting_block = find_first_free_block(num_blocks);
+    uint64_t starting_block = find_first_free_block(num_blocks);
 
     // check if there was a large enough region
-    if (starting_block == -1) return 0;
+    if (starting_block == 0x100000000ULL) return 0;
 
     // found enough blocks, set as used
     for (uint32_t i = 0; i < num_blocks; ++i) set_block(starting_block + i);

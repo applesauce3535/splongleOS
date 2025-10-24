@@ -93,15 +93,21 @@ void set_type1(multiboot_info_t* mbinfo) {
     uintptr_t offset = 0;
 
     while (offset < mmap_len) {
+        
         multiboot_memory_map_t* entry = (multiboot_memory_map_t*)(mmap_addr + offset);
         uint64_t base = entry->addr;
         uint64_t length = entry->len;
+        uint64_t end = base + length;
         uint32_t type = entry->type;
-
-        if (type == 1) {
-            initialize_region(base, length);
-        }
-
         offset += entry->size + sizeof(entry->size);
+        // skip anything above 4GB
+        if (base >= 0x100000000ULL) continue;
+
+        // clip if it crosses 4GB boundary
+        if (end > 0x100000000ULL) length = 0x100000000ULL - base;
+
+        if (type == MULTIBOOT_MEMORY_AVAILABLE) initialize_region((uint32_t)base, length);
+        
+        else deinitialize_region((uint32_t)base, length);
     }
 }

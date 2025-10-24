@@ -54,7 +54,7 @@ void i686_IRQ_Init() {
 
     // enable interrupts
     i686_EnableInts();
-    // g_Driver->Unmask(0);
+    g_Driver->Unmask(0);        // PIT
     g_Driver->Unmask(1);        // keyboard
 }
 void i686_IRQ_RegisterHandler(int irq, IRQHandler handler) {

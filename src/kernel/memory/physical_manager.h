@@ -12,7 +12,7 @@
 #define MEMMAP_AREA     0x30000
 
 // sets block/bit in mem map to used
-void set_block(uint32_t bit);
+void set_block(int32_t bit);
 
 // unsets block/bit in mem map to free
 void unset_block(uint32_t bit);
@@ -21,7 +21,7 @@ void unset_block(uint32_t bit);
 bool check_block(uint32_t bit);
 
 // find the first free block of memory for a size
-int32_t find_first_free_block(uint32_t num_blocks);
+uint64_t find_first_free_block(uint32_t num_blocks);
 
 // initialize memory manager given an address and size to put the mmap
 void Memory_Manager_Init(uint32_t address, uint64_t size);

@@ -3,11 +3,12 @@
 #include "stdio.h"
 #include "memory.h"
 #include "hal/hal.h"
+#include "arch/i686/asm_wrappers.h"
 #include "arch/i686/irq.h"
 #include "memory/physical_manager.h"
 #include "memory/page.h"
 #include "memory/memmap.h"
-#include "dev/drive.h"
+#include "arch/i686/i8254.h"
 #include "multiboot.h"
 
 void crash_me();
@@ -16,44 +17,17 @@ void timer(Registers* regs) {
     printk(".");
 }
 
-void test_map_fault() {
-    void* frame = allocate_blocks(1);  // allocate 4KB physical frame
-    if (!frame) {
-        printk("Failed to allocate frame\n");
-        return;
-    }
-
-    void* virt = (void*)0xDEADBEEF;
-
-    if (!map_page(frame, virt)) {
-        printk("map_page failed\n");
-        return;
-    }
-
-    // should now be safe
-    volatile uint32_t* poop = (volatile uint32_t*)virt;
-    printk("mapped poop: %x to physical: %x\n", poop, frame);
-    *poop = 1234;
-
-    printk("Wrote value %u to mapped address %x successfully\n", *poop, poop);
-}
-
 extern uint8_t __bss_start;
 extern uint8_t __end;
 extern uint8_t phys;
 
 void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
+    clrscr();
     HAL_Init();
-    printk("All hardware initialized\n");
+    printk("All stuff initialized\n");
 
     if (magic == MULTIBOOT_BOOTLOADER_MAGIC) {
         printk("Booted by Multiboot (magic ok)\n");
-        // print all detected memory
-        // parse_multiboot_memmap(mbinfo);
-        // also print memory occupied by kernel
-        // printk("Kernel starts at 0x%x, ends at 0x%x, occupies 0x%x amount of space.\nDon't override this\n", &phys, &__end, &__end-&phys);
-        // print drive info
-        // parse_multiboot_driveinfo(mbinfo);
         uint64_t total_mem = get_total_mem(mbinfo);
         Memory_Manager_Init(MEMMAP_AREA, total_mem);
         get_block_info();
@@ -66,19 +40,29 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
 
         // test page fault
         volatile uint32_t* poop = (uint32_t*)0xDEADBEEF;
-        printk("Gonna write poop and cause a page fault\n");
+        printk("Gonna write variable and cause a page fault\n");
         // printk("%d\n", *poop);      // kernel read PF
-        // printk("Just printed poop after page faulting it\n");
+        // printk("Just printed variable after page faulting it\n");
         *poop = 1234;               // kernel write PF
-        printk("Just wrote poop after page faulting it\n");
+        printk("Just wrote variable after page faulting it\n");
         printk("Hello world from splongleOS\n");
+        printk("There's a race condition when displaying CPU speed and typing and I'm not gonna fix it hehehe\n");
     } 
     else {
         // something went wrong, display incorrect multiboot magic number
         printk("Not booted by Multiboot: magic=0x%x\n", magic);
     }
 
-    // i686_IRQ_RegisterHandler(0, timer);
+    // now entering the realm of the kernel main loop...
+    uint32_t last_ticks = 0;
+    while (1) {
+        uint32_t ticks = get_ticks();
+        if (ticks - last_ticks >= 100) {
+            last_ticks = ticks;
+            print_CPU();
+        }
+    }
+
 
     // crash_me();
 
