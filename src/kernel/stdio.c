@@ -5,7 +5,7 @@
 
 const unsigned SCREEN_WIDTH = 80;
 const unsigned SCREEN_HEIGHT = 25;
-const uint8_t DEFAULT_COLOR = 0x61;
+const uint8_t DEFAULT_COLOR = 0x0C;
 
 volatile bool vga_lock = false;
 
@@ -155,31 +155,31 @@ void eatc() {
 
 void movecursor(uint32_t scancode) {
 
-    // up arrow
-    if (scancode == 72 && g_ScreenY == 0) {
-        return;
-    }
-    else if (scancode == 72 && g_ScreenY > 0) {
-        g_ScreenY--;
-        setcursor(g_ScreenX, g_ScreenY);
-        return;
-    }
+    // // up arrow
+    // if (scancode == 72 && g_ScreenY == 0) {
+    //     return;
+    // }
+    // else if (scancode == 72 && g_ScreenY > 0) {
+    //     g_ScreenY--;
+    //     setcursor(g_ScreenX, g_ScreenY);
+    //     return;
+    // }
     // left arrow
-    else if (scancode == 75 && g_ScreenX == 0 && g_ScreenY == 0) {
+    if (scancode == 75 && g_ScreenX == 0 && g_ScreenY == 0) {
         return;
     }
-    else if (scancode == 75 && g_ScreenX > 0) {
+    else if (scancode == 75 && g_ScreenX > 2) {
         g_ScreenX--;
         setcursor(g_ScreenX, g_ScreenY);
         return;
     }
     
-    else if (scancode == 75 && g_ScreenX == 0) {
-        g_ScreenY--;
-        g_ScreenX = SCREEN_WIDTH;
-        setcursor(g_ScreenX, g_ScreenY);
-        return;
-    }
+    // else if (scancode == 75 && g_ScreenX == 0) {
+    //     g_ScreenY--;
+    //     g_ScreenX = SCREEN_WIDTH;
+    //     setcursor(g_ScreenX, g_ScreenY);
+    //     return;
+    // }
     
 
     // right arrow
@@ -191,24 +191,24 @@ void movecursor(uint32_t scancode) {
         setcursor(g_ScreenX, g_ScreenY);
         return;
     }
-    else if (scancode == 77 && g_ScreenX == SCREEN_WIDTH) {
-        g_ScreenY++;
-        g_ScreenX = 0;
-        setcursor(g_ScreenX, g_ScreenY);
-        return;
-    }
+    // else if (scancode == 77 && g_ScreenX == SCREEN_WIDTH) {
+    //     g_ScreenY++;
+    //     g_ScreenX = 0;
+    //     setcursor(g_ScreenX, g_ScreenY);
+    //     return;
+    // }
     
 
-    // down arrow
-    else if (scancode == 80 && g_ScreenY == SCREEN_HEIGHT) {
-        return;
-    }
-    else if (scancode == 80 && g_ScreenY < SCREEN_HEIGHT) {
-        g_ScreenY++;
-        setcursor(g_ScreenX, g_ScreenY);
+    // // down arrow
+    // else if (scancode == 80 && g_ScreenY == SCREEN_HEIGHT) {
+    //     return;
+    // }
+    // else if (scancode == 80 && g_ScreenY < SCREEN_HEIGHT) {
+    //     g_ScreenY++;
+    //     setcursor(g_ScreenX, g_ScreenY);
 
-        return;
-    }
+    //     return;
+    // }
     
 }
 

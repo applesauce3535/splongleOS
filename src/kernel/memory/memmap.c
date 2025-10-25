@@ -107,7 +107,19 @@ void set_type1(multiboot_info_t* mbinfo) {
         if (end > 0x100000000ULL) length = 0x100000000ULL - base;
 
         if (type == MULTIBOOT_MEMORY_AVAILABLE) initialize_region((uint32_t)base, length);
-        
+
         else deinitialize_region((uint32_t)base, length);
     }
+}
+
+void print_mem() {
+    int X = getX();
+    int Y = getY();
+    setX(0);
+    setY(0);
+    setcursor(0, 0);
+    get_block_info();
+    setX(X);
+    setY(Y);
+    setcursor(X, Y);
 }

@@ -93,7 +93,7 @@ void initialize_region(uint32_t base, uint64_t size) {
 
 void deinitialize_region(uint32_t base, uint64_t size) {
     if ((uint64_t)base >= 0x100000000ULL) return;
-    
+
     if ((uint64_t)base + size > 0x100000000ULL) size = 0x100000000ULL - (uint64_t)base;
     // convert phys address to a block
     uint32_t align = base / BLOCK_SIZE;
@@ -139,5 +139,5 @@ void free_blocks(uint32_t* address, uint32_t num_blocks) {
 }
 
 void get_block_info() {
-    printk("Total blocks: %u, Used blocks: %u, Free blocks: %u\n", g_maxBlocks, g_usedBlocks, (g_maxBlocks - g_usedBlocks));
+    printk("Total blocks: %u, Used blocks: %u", g_maxBlocks, g_usedBlocks);
 }

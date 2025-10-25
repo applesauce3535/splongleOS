@@ -3,7 +3,9 @@
 #include "arch/i686/asm_wrappers.h"
 #include "arch/i686/irq.h"
 #include "stdio.h"
+#include "memory.h"
 #include "keyboard.h"
+#include "shell/shell.h"
 
 bool g_capsOn = false;
 bool g_capsLock = false;
@@ -65,6 +67,10 @@ UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,
 UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN
 };
 
+#define MAX_INPUT 128
+static char input_buffer[MAX_INPUT];
+static int input_pos = 0;
+
 
 void Keyboard_Init() {
     i686_IRQ_RegisterHandler(1, &keyboardHandler);
@@ -86,10 +92,19 @@ void keyboardHandler(Registers* regs) {
     switch(scancode) {
         case 1:             // escape
         case 14:            // backspace
-            if (press == 0) eatc();
+            if (press == 0 && input_pos > 0) {
+                eatc();
+                input_pos--;
+            }
             break;
         case 28:            // enter
-            if (press == 0) printk("\n");
+            if (press == 0) {
+                input_buffer[input_pos] = '\0'; // null terminate input
+                send_command(input_buffer);
+                memset(input_buffer, 0, MAX_INPUT);
+                input_pos = 0;                  // reset for next input
+                printk("$>");
+            }
             break;
         case 29: 
         case 54:            // right shift
@@ -107,18 +122,18 @@ void keyboardHandler(Registers* regs) {
         case 66:
         case 67:
         case 68:            // functions keys end
-        case 72:
-            if (press == 0) movecursor(scancode);
-            break;
+        // case 72:
+        //     if (press == 0 && Y > 1) movecursor(scancode);
+        //     break;
         case 75:
             if (press == 0) movecursor(scancode);
             break;
         case 77:
             if (press == 0) movecursor(scancode);
             break;
-        case 80:
-            if (press == 0) movecursor(scancode);
-            break;
+        // case 80:
+        //     if (press == 0 && Y > 0) movecursor(scancode);
+        //     break;
         case 87:
         case 88:
             break;
@@ -133,11 +148,16 @@ void keyboardHandler(Registers* regs) {
             break;
         default:
             if (press == 0) {
-                if (g_capsOn || g_capsLock) {
+                if ((g_capsOn || g_capsLock) && input_pos < MAX_INPUT - 1) {
+                    input_buffer[input_pos++] = uppercase[scancode];
                     printk("%c", uppercase[scancode]);
                 }
-                else {
+                else if (input_pos < MAX_INPUT - 1) {
+                    input_buffer[input_pos++] = lowercase[scancode];
                     printk("%c", lowercase[scancode]);
+                }
+                else {
+                    break;
                 }
             }
     }

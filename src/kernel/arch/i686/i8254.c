@@ -97,9 +97,9 @@ uint64_t measure_cpu_freq() {
 void print_CPU() {
     int X = getX();
     int Y = getY();
-    setX(55);
+    setX(57);
     setY(0);
-    setcursor(55, 0);
+    setcursor(57, 0);
     uint64_t cpu_freq = measure_cpu_freq();
     printk("CPU Frequency: %llu MHz\n", cpu_freq / 1000000);
     // restore cursor position
