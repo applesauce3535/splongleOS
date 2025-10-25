@@ -163,23 +163,24 @@ void PFHandler(Registers* regs) {
     bool write = (ec & 2);
     bool user = (ec & 4);
 
-    printk("Page fault at 0x%x, EC: 0x%x\n", bad_addr, ec);
-    printk("  Caused by: %s in %s mode during %s\n",
-        (ec & 0x1) ? "protection violation (page present)" : "non-present page",
-        (ec & 0x4) ? "user" : "kernel",
-        (ec & 0x2) ? "write" : "read");
+    // debugging info
+    // printk("Page fault at 0x%x, EC: 0x%x\n", bad_addr, ec);
+    // printk("  Caused by: %s in %s mode during %s\n",
+    //     (ec & 0x1) ? "protection violation (page present)" : "non-present page",
+    //     (ec & 0x4) ? "user" : "kernel",
+    //     (ec & 0x2) ? "write" : "read");
 
-    if (ec & 0x8)
-        printk("  Reserved bit violation in page directory/table!\n");
-    if (ec & 0x10)
-        printk("  Caused by instruction fetch.\n");
+    // if (ec & 0x8)
+    //     printk("  Reserved bit violation in page directory/table!\n");
+    // if (ec & 0x10)
+    //     printk("  Caused by instruction fetch.\n");
 
     if (not_present && !user) {
         void* frame = allocate_blocks(1);
         if (frame) {        // fail? out of memory, we will have to kick out a page later
             uintptr_t vpage = bad_addr & ~0xFFF;
             if (map_page(frame, (void*)vpage)) {
-                printk("Kernel non-present page fault resolved, resuming execution\n");
+                // printk("Kernel non-present page fault resolved, resuming execution\n");
                 return; // resume
             }
         }

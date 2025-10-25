@@ -27,7 +27,7 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
     clrscr();
     printk("\n");
     HAL_Init();
-    printk("All stuff initialized\n");
+    // printk("All stuff initialized\n");
 
     if (magic == MULTIBOOT_BOOTLOADER_MAGIC) {
         printk("Booted by Multiboot (magic ok)\n");
@@ -39,14 +39,14 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
         deinitialize_region(MEMMAP_AREA, (total_mem / BLOCK_SIZE) / BLOCKS_PER_BYTE);
         if (Page_Manager_Init()) printk("Paging enabled\n");
 
-        // test page fault
-        volatile uint32_t* poop = (uint32_t*)0xDEADBEEF;
-        printk("Gonna write to poop and cause a page fault\n");
-        // printk("%d\n", *poop);      // kernel read PF
-        // printk("Just printed variable after page faulting it\n");
-        *poop = 1234;               // kernel write PF
-        printk("Just wrote to poop after page faulting it\n");
-        printk("Hello world from splongleOS\n");
+        // // test page fault
+        // volatile uint32_t* poop = (uint32_t*)0xDEADBEEF;
+        // printk("Gonna write to poop and cause a page fault\n");
+        // // printk("%d\n", *poop);      // kernel read PF
+        // // printk("Just printed variable after page faulting it\n");
+        // *poop = 1234;               // kernel write PF
+        // printk("Just wrote to poop after page faulting it\n");
+        // printk("Hello world from splongleOS\n");
     } 
     else {
         // something went wrong, display incorrect multiboot magic number
@@ -56,6 +56,7 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
     // now entering the realm of the kernel main loop...
     uint32_t last_ticks = 0;
     print_mem();            // whenever some memory change happens, we'll call this...
+    printk("Type 'help' to get started!\n");
     printk("$>");
     while (true) {
         uint32_t ticks = get_ticks();

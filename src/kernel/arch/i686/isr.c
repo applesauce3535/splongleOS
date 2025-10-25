@@ -74,7 +74,7 @@ void ASMCALL i686_ISR_Handler(Registers* regs) {
 }
 
 void i686_ISR_RegisterHandler(int interrupt, ISRHandler handler) {
-    printk("Enabling %d ", interrupt);
+    // printk("Enabling %d ", interrupt);
     g_ISRHandlers[interrupt] = handler;
     i686_IDT_EnableGate(interrupt);
 }

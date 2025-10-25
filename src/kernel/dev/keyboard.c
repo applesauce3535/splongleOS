@@ -76,6 +76,7 @@ void Keyboard_Init() {
     i686_IRQ_RegisterHandler(1, &keyboardHandler);
 }
 void keyboardHandler(Registers* regs) {
+    int Y = getY();
     bool extended = false;
     // retrieve data from keyboard
     uint8_t code = i686_inb(0x60);
@@ -92,13 +93,13 @@ void keyboardHandler(Registers* regs) {
     switch(scancode) {
         case 1:             // escape
         case 14:            // backspace
-            if (press == 0 && input_pos > 0) {
+            if (press == 0 && input_pos > 0 && Y > 0) {
                 eatc();
                 input_pos--;
             }
             break;
         case 28:            // enter
-            if (press == 0) {
+            if (press == 0 && Y > 0) {
                 input_buffer[input_pos] = '\0'; // null terminate input
                 send_command(input_buffer);
                 memset(input_buffer, 0, MAX_INPUT);
@@ -148,11 +149,11 @@ void keyboardHandler(Registers* regs) {
             break;
         default:
             if (press == 0) {
-                if ((g_capsOn || g_capsLock) && input_pos < MAX_INPUT - 1) {
+                if ((g_capsOn || g_capsLock) && input_pos < MAX_INPUT - 1 && Y > 0) {
                     input_buffer[input_pos++] = uppercase[scancode];
                     printk("%c", uppercase[scancode]);
                 }
-                else if (input_pos < MAX_INPUT - 1) {
+                else if (input_pos < MAX_INPUT - 1 && Y > 0) {
                     input_buffer[input_pos++] = lowercase[scancode];
                     printk("%c", lowercase[scancode]);
                 }
