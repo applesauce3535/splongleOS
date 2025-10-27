@@ -7,8 +7,7 @@
 #include "keyboard.h"
 #include "shell/shell.h"
 
-bool g_capsOn = false;
-bool g_capsLock = false;
+
 
 const uint32_t UNKNOWN = 0xFFFFFFFF;
 const uint32_t ESC = 0xFFFFFFFF - 1;
@@ -67,9 +66,32 @@ UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,
 UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN
 };
 
-#define MAX_INPUT 128
-static char input_buffer[MAX_INPUT];
-static int input_pos = 0;
+#define MAX_SIZE 128
+
+bool g_capsOn = false;
+bool g_capsLock = false;
+static char kb_buffer[MAX_SIZE];
+static int kb_head = 0;
+static int kb_tail = 0;
+
+void kb_buffer_push(char c) {
+    int next = (kb_head + 1) % MAX_SIZE;
+    if (next != kb_tail) {
+        kb_buffer[kb_head] = c;
+        kb_head = next;
+    }
+}
+
+bool keyboard_haschar() {
+    return kb_head != kb_tail;
+}
+
+char keyboard_getchar() {
+    if (kb_head == kb_tail) return 0;
+    char c = kb_buffer[kb_tail];
+    kb_tail = (kb_tail + 1) % MAX_SIZE;
+    return c;
+}
 
 
 void Keyboard_Init() {
@@ -84,7 +106,7 @@ void keyboardHandler(Registers* regs) {
 
     if (code == 0xE0) {
         extended = true;
-        return;  // wait for the next byte
+        return;  // wait for the next byte, this only happens for a few keys like the arrows
     }
 
     bool press = code & 0x80;       // was the button pressed or released?
@@ -93,18 +115,13 @@ void keyboardHandler(Registers* regs) {
     switch(scancode) {
         case 1:             // escape
         case 14:            // backspace
-            if (press == 0 && input_pos > 0 && Y > 0) {
-                eatc();
-                input_pos--;
+            if (press == 0 && Y > 0) {
+                kb_buffer_push('\b');
             }
             break;
         case 28:            // enter
             if (press == 0 && Y > 0) {
-                input_buffer[input_pos] = '\0'; // null terminate input
-                send_command(input_buffer);
-                memset(input_buffer, 0, MAX_INPUT);
-                input_pos = 0;                  // reset for next input
-                printk("$>");
+                kb_buffer_push('\n');
             }
             break;
         case 29: 
@@ -149,13 +166,11 @@ void keyboardHandler(Registers* regs) {
             break;
         default:
             if (press == 0) {
-                if ((g_capsOn || g_capsLock) && input_pos < MAX_INPUT - 1 && Y > 0) {
-                    input_buffer[input_pos++] = uppercase[scancode];
-                    printk("%c", uppercase[scancode]);
+                if ((g_capsOn || g_capsLock) && Y > 0) {
+                    kb_buffer_push(uppercase[scancode]);
                 }
-                else if (input_pos < MAX_INPUT - 1 && Y > 0) {
-                    input_buffer[input_pos++] = lowercase[scancode];
-                    printk("%c", lowercase[scancode]);
+                else if (Y > 0) {
+                    kb_buffer_push(lowercase[scancode]);
                 }
                 else {
                     break;

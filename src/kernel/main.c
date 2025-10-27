@@ -11,6 +11,7 @@
 #include "memory/memmap.h"
 #include "arch/i686/i8254.h"
 #include "dev/keyboard.h"
+#include "shell/shell.h"
 #include "multiboot.h"
 
 void crash_me();
@@ -57,13 +58,13 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
     uint32_t last_ticks = 0;
     print_mem();            // whenever some memory change happens, we'll call this...
     printk("Type 'help' to get started!\n");
-    printk("$>");
     while (true) {
         uint32_t ticks = get_ticks();
         if (ticks - last_ticks >= 250) {
             last_ticks = ticks;
             print_CPU();
         }
+        Shell_Run();    // because there's no scheduler yet, this will be the only thing running
     }
 
 

@@ -1,5 +1,4 @@
 #pragma once
 
-#define MAX_SIZE 78     // size of the screen minus the $>
-
+void Shell_Run();
 void send_command(const char* cmd);

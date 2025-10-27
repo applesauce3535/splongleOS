@@ -4,3 +4,5 @@
 
 void Keyboard_Init();
 void keyboardHandler(Registers* regs);
+char keyboard_getchar();
+bool keyboard_haschar();
