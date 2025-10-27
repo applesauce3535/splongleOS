@@ -9,11 +9,6 @@
 
 volatile uint32_t ticks = 0;
 
-void control_PIT_2() {
-    // example of controlling PIT channel 2
-    i686_outb(0x61, 0x1);
-}
-
 void PIT_Init() {
     i686_IRQ_RegisterHandler(0, &PIT_Handler);
 }
@@ -115,4 +110,16 @@ uint32_t get_ticks() {
 // channel 0 handler
 void PIT_Handler() {
     ++ticks;
+}
+
+void sleep(uint32_t ms) {
+    // make sure interrupts are enabled so PIT fires off
+    i686_EnableInts();
+    uint32_t start = ticks;
+    uint32_t wait_ticks = (ms * 100) / 1000;  // convert ms to ticks (~100 ticks per second, 1000ms in 1s)
+    if (wait_ticks == 0) wait_ticks = 1;      // always wait at least one tick
+
+    while ((ticks - start) < wait_ticks) {
+        __asm__ __volatile__("hlt");
+    }
 }

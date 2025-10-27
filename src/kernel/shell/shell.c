@@ -6,6 +6,8 @@
 #include "string.h"
 #include "dev/keyboard.h"
 #include "arch/i686/rtc.h"
+#include "dev/pc_speaker.h"
+#include "arch/i686/i8254.h"
 
 void Shell_Run() {
     char input[128];
@@ -59,6 +61,7 @@ void send_command(const char* cmd) {
     else if (strcmp(cmd, "datetime")) {
         printk("\n");
         set_show_datetime();
+        play_note(A4, 20);
     }
     else {
         printk("\nUnrecognized command (caps sensitive!)\n");

@@ -29,7 +29,9 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
     printk("\n");
     HAL_Init();
     // printk("All stuff initialized\n");
-
+    // printk("Testing sleep function: ");
+    // sleep(3000);
+    // printk("Done\n");
     if (magic == MULTIBOOT_BOOTLOADER_MAGIC) {
         printk("Booted by Multiboot (magic ok)\n");
         uint64_t total_mem = get_total_mem(mbinfo);
@@ -56,7 +58,7 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
 
     // now entering the realm of the kernel main loop...
     uint32_t last_ticks = 0;
-    print_mem();            // whenever some memory change happens, we'll call this...
+    // print_mem();            // whenever some memory change happens, we'll call this...
     printk("Type 'help' to get started!\n");
     while (true) {
         uint32_t ticks = get_ticks();

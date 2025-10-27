@@ -109,8 +109,8 @@ void print_datetime() {
     int X = getX();
     int Y = getY();
     setX(60);
-    setY(0);
-    setcursor(60, 0);
+    setY(23);
+    setcursor(60, 23);
     if (g_datetime->second >= 10) printk("%d-%d-%d %d:%d:%d", g_datetime->day, g_datetime->month, g_datetime->year,\
                                                             g_datetime->hour, g_datetime->minute, g_datetime->second);
     else printk("%d-%d-%d %d:%d:0%d", g_datetime->day, g_datetime->month, g_datetime->year,\
@@ -125,8 +125,8 @@ void blank_datetime() {
     int X = getX();
     int Y = getY();
     setX(60);
-    setY(0);
-    setcursor(60, 0);
+    setY(23);
+    setcursor(60, 23);
     printk("                    ");  // probably good enough
     // restore cursor position
     setX(X);

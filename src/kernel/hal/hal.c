@@ -8,6 +8,7 @@
 #include "arch/i686/i8254.h"
 #include "arch/i686/rtc.h"
 #include "dev/keyboard.h"
+#include "dev/pc_speaker.h"
 #include "stdio.h"
 
 

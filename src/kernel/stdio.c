@@ -25,7 +25,7 @@ const unsigned SCREEN_HEIGHT = 25;
 high bits background
 low bits text
 */
-const uint8_t DEFAULT_COLOR = 0x74;
+const uint8_t DEFAULT_COLOR = 0x03;
 
 volatile bool vga_lock = false;
 
@@ -152,7 +152,7 @@ void putc(char c) {
         g_ScreenX = 0;
     }
 
-    if (g_ScreenY >= SCREEN_HEIGHT-1) {
+    if (g_ScreenY >= SCREEN_HEIGHT) {
         scrollback(1);
     }
 
