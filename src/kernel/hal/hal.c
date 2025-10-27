@@ -6,6 +6,7 @@
 #include "arch/i686/irq.h"
 #include "arch/i686/pic.h"
 #include "arch/i686/i8254.h"
+#include "arch/i686/rtc.h"
 #include "dev/keyboard.h"
 #include "stdio.h"
 
@@ -28,4 +29,6 @@ void HAL_Init() {
     // printk("PIT initialized\n");
     Keyboard_Init();
     // printk("Keyboard initialized\n");
+    RTC_Init();
+    enable_RTC();
 }

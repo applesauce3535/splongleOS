@@ -7,6 +7,7 @@
 #include "keyboard.h"
 #include "shell/shell.h"
 
+#define KEYBOARD_PORT 0x60
 
 
 const uint32_t UNKNOWN = 0xFFFFFFFF;
@@ -101,7 +102,7 @@ void keyboardHandler(Registers* regs) {
     int Y = getY();
     bool extended = false;
     // retrieve data from keyboard
-    uint8_t code = i686_inb(0x60);
+    uint8_t code = i686_inb(KEYBOARD_PORT);
     i686_io_wait();
 
     if (code == 0xE0) {

@@ -56,6 +56,8 @@ void i686_IRQ_Init() {
     i686_EnableInts();
     g_Driver->Unmask(0);        // PIT
     g_Driver->Unmask(1);        // keyboard
+    g_Driver->Unmask(2);        // slave PIC, no handler needed
+    g_Driver->Unmask(8);        // RTC
 }
 void i686_IRQ_RegisterHandler(int irq, IRQHandler handler) {
     g_IRQHandlers[irq] = handler;

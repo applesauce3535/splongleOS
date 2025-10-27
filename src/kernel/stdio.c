@@ -152,7 +152,7 @@ void putc(char c) {
         g_ScreenX = 0;
     }
 
-    if (g_ScreenY >= SCREEN_HEIGHT) {
+    if (g_ScreenY >= SCREEN_HEIGHT-1) {
         scrollback(1);
     }
 

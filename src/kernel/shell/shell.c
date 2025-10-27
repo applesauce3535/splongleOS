@@ -5,6 +5,7 @@
 #include "shell.h"
 #include "string.h"
 #include "dev/keyboard.h"
+#include "arch/i686/rtc.h"
 
 void Shell_Run() {
     char input[128];
@@ -34,11 +35,15 @@ void Shell_Run() {
 
 
 void send_command(const char* cmd) {
-    if (strcmp(cmd, "help")) {
+    if (strcmp(cmd, "help please") || strcmp(cmd, "please help")) {
         printk("\ngetmem - display physical memory information \
                 \nversion - display splongleOS version \
                 \nwhoami - display who you are \
+                \ndatetime - toggle the date and time on screen \
                 \n");
+    }
+    else if (strcmp(cmd, "help")) {
+        printk("\nSay please\n");
     }
     else if (strcmp(cmd, "getmem")) {
         printk("\n");
@@ -50,6 +55,10 @@ void send_command(const char* cmd) {
     }
     else if (strcmp(cmd, "whoami")) {
         printk("\nsplongle\n");
+    }
+    else if (strcmp(cmd, "datetime")) {
+        printk("\n");
+        set_show_datetime();
     }
     else {
         printk("\nUnrecognized command (caps sensitive!)\n");
