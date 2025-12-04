@@ -21,4 +21,5 @@ void HAL_Init() {
     enable_RTC();
     // Mouse_Init();
     // printk("Mouse initialized\n");
+    SelectDrivers(&g_Manager);
 }

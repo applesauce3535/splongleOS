@@ -11,5 +11,7 @@
 // #include "include/mouse.h"
 #include "pc_speaker.h"
 #include "stdio.h"
+#include "driver.h"
+#include "pci.h"
 
 void HAL_Init();
