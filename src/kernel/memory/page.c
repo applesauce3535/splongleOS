@@ -1,10 +1,4 @@
-#include "memory.h"
-#include "page.h"
-#include "physical_manager.h"
-#include "arch/i686/asm_wrappers.h"
-#include "arch/i686/isr.h"
-#include "stdio.h"
-
+#include "include/page.h"
 
 page_directory* g_currentPD = 0;
 

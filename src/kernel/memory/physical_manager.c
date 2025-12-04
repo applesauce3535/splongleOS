@@ -1,8 +1,4 @@
-#include <stdint.h>
-#include <stdbool.h>
-#include "stdio.h"
-#include "memory.h"
-#include "physical_manager.h"
+#include "include/physical_manager.h"
 
 static uint32_t* g_memoryMap = 0;
 static uint32_t g_maxBlocks = 0;

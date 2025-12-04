@@ -1,7 +1,6 @@
-#include "asm_wrappers.h"
+#include "include/asm_wrappers.h"
 
-#define UNUSED_PORT 0x80
-
+// writes nothing to an unused port. completely safe way to wait 1 machine cycle
 void i686_io_wait() {
     i686_outb(UNUSED_PORT, 0);
 }

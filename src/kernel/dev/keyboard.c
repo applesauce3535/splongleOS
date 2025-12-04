@@ -1,13 +1,4 @@
-#include <stdint.h>
-#include <stdbool.h>
-#include "arch/i686/asm_wrappers.h"
-#include "arch/i686/irq.h"
-#include "stdio.h"
-#include "memory.h"
-#include "keyboard.h"
-#include "shell/shell.h"
-
-#define KEYBOARD_PORT 0x60
+#include "include/keyboard.h"
 
 
 const uint32_t UNKNOWN = 0xFFFFFFFF;

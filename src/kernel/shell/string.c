@@ -1,6 +1,4 @@
-#include <stdint.h>
-#include <stdbool.h>
-#include "string.h"
+#include "include/string.h"
 
 bool strcmp(const char* str1, const char* str2) {
 

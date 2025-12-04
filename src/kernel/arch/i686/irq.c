@@ -1,12 +1,4 @@
-#include "irq.h"
-#include "i8259.h"
-#include "pic.h"
-#include "asm_wrappers.h"
-#include "stdio.h"
-#include "util/arrays.h"
-#include <stddef.h>
-
-#define PIC_REMAP_OFFSET 0x20   // first 32 ISRs are CPU exceptions so start at offset 32 (0x20)
+#include "include/irq.h"
 
 IRQHandler g_IRQHandlers[16];
 static const PICDriver* g_Driver = NULL;
@@ -58,6 +50,7 @@ void i686_IRQ_Init() {
     g_Driver->Unmask(1);        // keyboard
     g_Driver->Unmask(2);        // slave PIC, no handler needed
     g_Driver->Unmask(8);        // RTC
+    // g_Driver->Unmask(12);       // mouse
 }
 void i686_IRQ_RegisterHandler(int irq, IRQHandler handler) {
     g_IRQHandlers[irq] = handler;

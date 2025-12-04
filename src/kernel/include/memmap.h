@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 #include "multiboot.h"
+#include "stdio.h"
+#include "physical_manager.h"
 
 
 // print the memory map nicely

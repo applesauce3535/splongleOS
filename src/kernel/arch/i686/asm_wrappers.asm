@@ -16,6 +16,21 @@ i686_inb:
     in al, dx
     ret
 
+global i686_outl
+i686_outl:
+    [bits 32]
+    mov dx, [esp + 4]
+    mov eax, [esp + 8]
+    out dx, eax
+    ret
+
+global i686_inl
+i686_inl:
+    [bits 32]
+    mov dx, [esp + 4]
+    in eax, dx
+    ret
+
 global i686_EnableInts
 i686_EnableInts:
     sti

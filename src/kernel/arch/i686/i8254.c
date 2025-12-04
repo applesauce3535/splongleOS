@@ -1,11 +1,8 @@
 /*
     Intel 8254 PIT device driver
 */
-#include <stdint.h>
-#include "stdio.h"
-#include "i8254.h"
-#include "asm_wrappers.h"
-#include "irq.h"
+
+#include "include/i8254.h"
 
 volatile uint32_t ticks = 0;
 
@@ -108,7 +105,7 @@ uint32_t get_ticks() {
 }
 
 // channel 0 handler
-void PIT_Handler() {
+void PIT_Handler(Registers* regs) {
     ++ticks;
 }
 

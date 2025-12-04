@@ -4,6 +4,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "stdio.h"
+#include "memory.h"
+#include "physical_manager.h"
 
 #define BLOCK_SIZE      4096        // 4kB
 #define BLOCKS_PER_BYTE 8           // each bit in a byte manages 1 block of memory, so each byte manages 4096 * 8 bytes of memory

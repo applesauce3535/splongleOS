@@ -1,5 +1,7 @@
 #pragma once
+
 #include <stdint.h>
+#include "util/binary.h"
 
 #define ASMCALL __attribute__((cdecl))
 

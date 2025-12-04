@@ -1,5 +1,4 @@
-#include "gdt.h"
-#include <stdint.h>
+#include "include/gdt.h"
 
 typedef struct {
     uint16_t SegmentLimitLow;           // segment limit (bits 0-15)

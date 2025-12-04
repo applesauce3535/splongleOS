@@ -1,0 +1,15 @@
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include "stdio.h"
+#include "memory.h"
+#include "hal.h"
+#include "asm_wrappers.h"
+#include "irq.h"
+#include "physical_manager.h"
+#include "page.h"
+#include "memmap.h"
+#include "i8254.h"
+#include "keyboard.h"
+#include "shell.h"
+#include "multiboot.h"

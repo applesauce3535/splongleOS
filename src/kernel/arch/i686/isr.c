@@ -1,9 +1,4 @@
-#include "isr.h"
-#include "idt.h"
-#include "gdt.h"
-#include "stdio.h"
-#include <stddef.h>
-#include "asm_wrappers.h"
+#include "include/isr.h"
 
 ISRHandler g_ISRHandlers[256];
 

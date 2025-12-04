@@ -1,11 +1,5 @@
-#include <stdint.h>
-#include <stdbool.h>
-#include "stdio.h"
-#include "asm_wrappers.h"
-#include "irq.h"
-#include "rtc.h"
+#include "include/rtc.h"
 
-#define RTC_DT_AREA     0x1610
 
 datetime_t* g_datetime = (datetime_t*) RTC_DT_AREA;
 bool show_datetime = false;
@@ -13,7 +7,7 @@ bool show_datetime = false;
 void RTC_Init() {
     i686_IRQ_RegisterHandler(8, &RTC_Handler);
 }
-void RTC_Handler() {
+void RTC_Handler(Registers* regs) {
     datetime_t new_datetime, old_datetime;
     uint8_t reg_B;
     static uint16_t RTC_ticks = 0;

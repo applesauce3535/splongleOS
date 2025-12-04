@@ -1,17 +1,4 @@
-#include <stdio.h>
-#include "hal.h"
-#include "arch/i686/gdt.h"
-#include "arch/i686/idt.h"
-#include "arch/i686/isr.h"
-#include "arch/i686/irq.h"
-#include "arch/i686/pic.h"
-#include "arch/i686/i8254.h"
-#include "arch/i686/rtc.h"
-#include "dev/keyboard.h"
-#include "dev/pc_speaker.h"
-#include "stdio.h"
-
-
+#include "include/hal.h"
 
 void HAL_Init() {
     // uncomment printk's for debugging
@@ -32,4 +19,6 @@ void HAL_Init() {
     // printk("Keyboard initialized\n");
     RTC_Init();
     enable_RTC();
+    // Mouse_Init();
+    // printk("Mouse initialized\n");
 }

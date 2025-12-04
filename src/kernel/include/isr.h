@@ -1,5 +1,11 @@
 #pragma once
+
 #include <stdint.h>
+#include "idt.h"
+#include "gdt.h"
+#include "stdio.h"
+#include <stddef.h>
+#include "asm_wrappers.h"
 
 #define ASMCALL __attribute__((cdecl))
 

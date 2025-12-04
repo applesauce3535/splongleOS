@@ -1,6 +1,4 @@
-#include "idt.h"
-#include <stdint.h>
-#include "util/binary.h"
+#include "include/idt.h"
 
 typedef struct {
     uint16_t BaseLow;

@@ -1,18 +1,4 @@
-#include <stdint.h>
-#include <stddef.h>
-#include <stdbool.h>
-#include "stdio.h"
-#include "memory.h"
-#include "hal/hal.h"
-#include "arch/i686/asm_wrappers.h"
-#include "arch/i686/irq.h"
-#include "memory/physical_manager.h"
-#include "memory/page.h"
-#include "memory/memmap.h"
-#include "arch/i686/i8254.h"
-#include "dev/keyboard.h"
-#include "shell/shell.h"
-#include "multiboot.h"
+#include "include/kernel_includes.h"
 
 void crash_me();
 

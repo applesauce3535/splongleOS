@@ -3,9 +3,13 @@
 #pragma once
 
 #include <stdint.h>
-#include<stdbool.h>
+#include <stdbool.h>
 #include "physical_manager.h"
-#include "arch/i686/isr.h"
+#include "isr.h"
+#include "memory.h"
+#include "page.h"
+#include "asm_wrappers.h"
+#include "stdio.h"
 
 #define PAGES_PER_TABLE         1024
 #define TABLES_PER_DIRECTORY    1024

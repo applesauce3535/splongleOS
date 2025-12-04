@@ -2,9 +2,7 @@
     functions for emulated (possibly real) pc speaker
 */
 
-#include "pc_speaker.h"
-#include "arch/i686/asm_wrappers.h"
-#include "arch/i686/i8254.h"
+#include "include/pc_speaker.h"
 
 void speaker_enable() {
     uint8_t temp = i686_inb(SPEAKER_PORT);

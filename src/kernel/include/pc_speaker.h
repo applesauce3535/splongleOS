@@ -1,6 +1,8 @@
 #pragma once
 
 #include <stdint.h>
+#include "asm_wrappers.h"
+#include "i8254.h"
 
 #define SPEAKER_PORT    0x61
 

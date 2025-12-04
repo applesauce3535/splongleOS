@@ -1,8 +1,4 @@
-#include <stdint.h>
-#include "stdio.h"
-#include "multiboot.h"
-#include "physical_manager.h"
-#include "memmap.h"
+#include "include/memmap.h"
 
 
 void parse_multiboot_memmap(multiboot_info_t* mbinfo) {

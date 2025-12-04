@@ -1,7 +1,4 @@
-#include <stdint.h>
-#include "stdio.h"
-#include "multiboot.h"
-#include "drive.h"
+#include "include/drive.h"
 
 void parse_multiboot_driveinfo(multiboot_info_t* mbinfo) {
     // check if the drive info failed

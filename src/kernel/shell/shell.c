@@ -1,13 +1,4 @@
-#include <stdint.h>
-#include <stdbool.h>
-#include "stdio.h"
-#include "memory/physical_manager.h"
-#include "shell.h"
-#include "string.h"
-#include "dev/keyboard.h"
-#include "arch/i686/rtc.h"
-#include "dev/pc_speaker.h"
-#include "arch/i686/i8254.h"
+#include "include/shell.h"
 
 void Shell_Run() {
     char input[128];

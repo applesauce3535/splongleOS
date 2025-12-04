@@ -2,6 +2,12 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "isr.h"
+#include "stdio.h"
+#include "asm_wrappers.h"
+#include "irq.h"
+
+#define RTC_DT_AREA     0x1610  // mem address for pointer
 
 typedef struct {
     uint8_t second;
@@ -18,7 +24,7 @@ typedef enum {
 } CMOS_REGS;
 
 void RTC_Init();
-void RTC_Handler();
+void RTC_Handler(Registers* regs);
 // read CMOS update in progress bit in status register A
 bool cmos_update_in_progress();
 // get an RTC reg value
