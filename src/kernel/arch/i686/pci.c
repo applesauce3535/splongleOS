@@ -82,8 +82,8 @@ void SelectDrivers(DriverManager* manager) {
             int num_functions = do_you_have_functions(bus, device) ? 8 : 1;
             for(int function = 0; function < num_functions; function++) {
                 PCIDeviceDescriptor dev = GetDevDescriptor(bus, device, function);
-                // if the vendor ID is all 0s or 1s, then there is no device
-                if (dev.vendor_id == 0x0000 || dev.vendor_id == 0xFFFF) break;
+                // if the vendor ID is all 0s or 1s, then there is no device or no function
+                if (dev.vendor_id == 0x0000 || dev.vendor_id == 0xFFFF) continue;
 
                 // keep in mind everything gathered from the PCI is little endian. no need
                 // to swap here because Intel is little endian
