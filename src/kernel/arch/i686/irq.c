@@ -51,6 +51,8 @@ void i686_IRQ_Init() {
     g_Driver->Unmask(2);        // slave PIC, no handler needed
     g_Driver->Unmask(8);        // RTC
     // g_Driver->Unmask(12);       // mouse
+    g_Driver->Unmask(14);       // master ATA
+    g_Driver->Unmask(15);       // slave ATA
 }
 void i686_IRQ_RegisterHandler(int irq, IRQHandler handler) {
     g_IRQHandlers[irq] = handler;

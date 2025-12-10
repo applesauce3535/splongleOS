@@ -1,19 +1,5 @@
 #include "include/pci.h"
 
-typedef struct {
-    uint32_t port_base;     // communication port
-    uint32_t interrupt;     // interrupt number of device
-    uint16_t bus;           // bus of the device
-    uint16_t device;        // actual device
-    uint16_t function;      // number of the function
-    uint16_t vendor_id;
-    uint16_t device_id;
-    uint8_t class_id;
-    uint8_t subclass_id;
-    uint8_t interface_id;
-    uint8_t revision;
-} PCIDeviceDescriptor;
-
 PCIDeviceDescriptor GetDevDescriptor(uint16_t bus, uint16_t device, uint16_t function) {
     PCIDeviceDescriptor result;
     result.bus = bus;
@@ -71,7 +57,7 @@ void PCI_write(uint16_t bus, uint16_t device, uint16_t function, uint32_t regist
     i686_outl(PCI_CONFIG_DATA, value);
 }
 
-// after reading this address, the seventh bit will tell us if the device has functions or not
+// after reading base address register, the seventh bit will tell us if the device has multiple functions or not
 bool do_you_have_functions(uint16_t bus, uint16_t device) {
     return PCI_read(bus, device, 0, 0x0E) & (1 << 7);
 }
@@ -85,6 +71,16 @@ void SelectDrivers(DriverManager* manager) {
                 // if the vendor ID is all 0s or 1s, then there is no device or no function
                 if (dev.vendor_id == 0x0000 || dev.vendor_id == 0xFFFF) continue;
 
+                // some devices can have up to 6 BARs, so loop 6 times
+                for(int bar_num = 0; bar_num < 6; bar_num++) {
+                    BaseAddressRegister bar = GetBAR(bus, device, function, bar_num);
+                    if (bar.address && (bar.type == INPUT_OUTPUT_TYPE)) dev.port_base = (uint32_t)bar.address;
+
+                    Driver* driver = GetDriver(dev);
+
+                    if (driver != 0) manager->AddDriver(driver);
+                }
+
                 // keep in mind everything gathered from the PCI is little endian. no need
                 // to swap here because Intel is little endian
                 printk("PCI BUS 0x%x ", bus);
@@ -95,4 +91,97 @@ void SelectDrivers(DriverManager* manager) {
             }
         }
     }
+}
+
+BaseAddressRegister GetBAR(uint16_t bus, uint16_t device, uint16_t function, uint16_t bar) {
+    BaseAddressRegister result;
+    /*
+    get the header type at config space 0x0E. actual header type is in bits 6-0, so mask off bit 7.
+    bit 7 is just if it's multifunctional or not.
+    header type 0 = 0x00 - standard PCI device
+    header type 1 = 0x01 - PCI to PCI bridge
+    header type 2 = 0x02 - cardbus controller
+    */
+    uint32_t headertype = PCI_read(bus, device, function, 0x0E) & 0x7F;
+    /*
+    type 0 can have a max of 6 BARs, BARs 0-5
+    type 1 can only have 2 BARs
+    type 2 is rare to see anymore, and has no BARs
+    */
+    int8_t max_bars = 6 - (4*headertype);
+    if (max_bars < 0) max_bars = 0; // type 2 case, although probably will not encounter it
+
+    if (bar >= max_bars) return result; // if requested BAR exceeds the max for the device, return null BAR
+
+    // BARs start at 0x10 and each one has a size of 4 bytes, so offset the offset by 4 * chosen BAR
+    uint32_t bar_value = PCI_read(bus, device, function, 0x10 + 4 * bar);
+    // tell whether this BAR is I/O or mmap type
+    result.type = (bar_value & 0x1) ? INPUT_OUTPUT_TYPE : MEMORY_MAPPING_TYPE;
+    uint32_t temp;
+
+    if (result.type == MEMORY_MAPPING_TYPE) {
+        /*
+        remove bit 0 that tells us the type, then check bits 1-0
+        00: 32 bit BAR
+        01: 20 bit BAR
+        10: 64 bit BAR
+        */
+        switch((bar_value >> 1) & 0x3) {
+            case 0x00:
+            case 0x01:
+            case 0x02:
+        }
+        // prefetchable bit for mmap BAR is bit 3
+        result.prefetchable = ((bar_value >> 3) & 0x1) == true;
+    }
+    else {  // I/O
+        // bits 31-2 tell us the port number, bits 1-0 do not, so mask them off
+        result.address = (uint8_t*)(bar_value & ~0x3);
+        // I/O is never prefetchable
+        result.prefetchable = false;
+        
+    }
+
+    return result;
+}
+
+Driver* GetDriver(PCIDeviceDescriptor dev) {
+    /*
+    TODO:
+    later on, store a file on the disk that has info on these PCI device drivers.
+    for now, I will have to hard code them
+    */
+    switch(dev.vendor_id) {
+        case 0x1022:    // AMD
+            switch(dev.device_id) {
+                case 0x2000:    // am79c973
+                    // printk("AMD Ethernet controller\n");
+                    break;
+            }
+            break;
+        
+        case 0x8086:    // Intel
+            switch(dev.device_id) {
+                case 0x100E:
+                    // printk("Intel Gigabit Ethernet Controller\n");
+                    break;
+                
+                case 0x2922:
+                    // printk("Intel 6 Port SATA Controller\n");
+                    break;
+            }
+            break;
+    }
+
+    // generic devices
+    switch(dev.class_id) {
+        case 0x03:  // graphics device
+            switch(dev.subclass_id) {
+                case 0x00:  // VGA devices
+                    // printk("VGA Device\n");
+                    break;
+            }
+            break;
+    }
+    return 0;
 }

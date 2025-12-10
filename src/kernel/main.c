@@ -2,18 +2,21 @@
 
 void crash_me();
 
-void timer(Registers* regs) {
-    printk(".");
-}
-
 extern uint8_t __bss_start;
 extern uint8_t __end;
 extern uint8_t phys;
 
+void DrawRect() {
+    for (int32_t y = 0; y < 200; ++y) {
+        for (int32_t x = 0; x < 320; ++x) {
+            PutPixel(x, y, 0x00, 0x00, 0xA8);
+        }
+    }
+}
+
 void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
     clrscr();
     printk("\n");
-    HAL_Init();
     // printk("All stuff initialized\n");
     // printk("Testing sleep function: ");
     // sleep(3000);
@@ -27,7 +30,8 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
         deinitialize_region(0x00100000, 0x00200000);
         deinitialize_region(MEMMAP_AREA, (total_mem / BLOCK_SIZE) / BLOCKS_PER_BYTE);
         if (Page_Manager_Init()) printk("Paging enabled\n");
-
+        HAL_Init();
+        DrawRect();
         // // test page fault
         // volatile uint32_t* poop = (uint32_t*)0xDEADBEEF;
         // printk("Gonna write to poop and cause a page fault\n");
@@ -43,18 +47,18 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
     }
 
     // now entering the realm of the kernel main loop...
-    uint32_t last_ticks = 0;
-    // print_mem();            // whenever some memory change happens, we'll call this...
-    printk("Type 'help' to get started!\n");
-    while (true) {
-        uint32_t ticks = get_ticks();
-        if (ticks - last_ticks >= 250) {
-            last_ticks = ticks;
-            print_CPU();
-        }
-        Shell_Run();    // because there's no scheduler yet, this will be the only thing running
-    }
-
+    // uint32_t last_ticks = 0;
+    // // print_mem();            // whenever some memory change happens, we'll call this...
+    // printk("Type 'help' to get started!\n");
+    // while (true) {
+    //     uint32_t ticks = get_ticks();
+    //     if (ticks - last_ticks >= 250) {
+    //         last_ticks = ticks;
+    //         print_CPU();
+    //     }
+    //     Shell_Run();    // because there's no scheduler yet, this will be the only thing running
+    // }
+    
 
     // crash_me();
 

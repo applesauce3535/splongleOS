@@ -33,6 +33,7 @@ void send_command(const char* cmd) {
                 \nversion - display splongleOS version \
                 \nwhoami - display who you are \
                 \ndatetime - toggle the date and time on screen \
+                \nlspci - list PCI devices \
                 \n");
     }
     else if (strcmp(cmd, "help")) {
@@ -53,6 +54,11 @@ void send_command(const char* cmd) {
         printk("\n");
         set_show_datetime();
         play_note(A4, 20);
+    }
+    else if (strcmp(cmd, "lspci")) {
+        printk("\n");
+        SelectDrivers(&g_Manager);
+        printk("\n");
     }
     else {
         printk("\nUnrecognized command (caps sensitive!)\n");

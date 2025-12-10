@@ -22,4 +22,27 @@ void HAL_Init() {
     // Mouse_Init();
     // printk("Mouse initialized\n");
     SelectDrivers(&g_Manager);
+    
+    // primary master/primary slave
+    // use interrupt 14
+    AdvancedTechnologyAttachment ata0m = ATA_Init(0x1F0, true);
+    if (ata0m.initialized) printk("Master ATA1 initialized\n");
+    AdvancedTechnologyAttachment ata0s = ATA_Init(0x1F0, false);
+    if (ata0s.initialized) printk("Slave ATA1 initialized\n");
+
+    // secondary master/secondary slave
+    // use interrupt 15
+    AdvancedTechnologyAttachment ata1m = ATA_Init(0x170, true);
+    if (ata1m.initialized) printk("Master ATA2 initialized\n");
+    AdvancedTechnologyAttachment ata1s = ATA_Init(0x170, false);
+    if (ata1s.initialized) printk("Slave ATA2 initialized\n");
+
+    /*
+    for more ATAs:
+    third: starts at 0x1E8
+    fourth: starts at 0x168
+    */
+   clrscr();
+   printk("Preparing switch to graphics mode! (320x200, 8)\n");
+   VGA_Init();
 }

@@ -14,6 +14,7 @@ typedef struct {
 
 void AddDriver (Driver* driver);
 
+// this is the driver manager for the entire system
 static DriverManager g_Manager = {
     .num_drivers = 0,
     .AddDriver = AddDriver

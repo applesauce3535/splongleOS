@@ -1,0 +1,7 @@
+8086:1237.0 PCI + Memory Controller
+8086:7000.0 PCI ISA bridge
+8086:7010.1 PCI ISA bridge + IDE
+8086:7113.3 PCI ISA bridge + ACPI
+1234:1111.0 QEMU VGA
+8086:100E.0 Intel Gigabit Ethernet Controller
+8086:2922.0 Intel 6 Port SATA Controller

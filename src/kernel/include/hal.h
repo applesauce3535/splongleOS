@@ -13,5 +13,7 @@
 #include "stdio.h"
 #include "driver.h"
 #include "pci.h"
+#include "ata.h"
+#include "vga.h"
 
 void HAL_Init();
