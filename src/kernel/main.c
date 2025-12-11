@@ -2,6 +2,22 @@
 
 void crash_me();
 
+void task1() {
+    while(1) { 
+        printk("task 1 ");
+        sleep(2000);
+        switch_to_task(current_task_TCB->next);
+    }
+}
+
+void task2() {
+    while(1) { 
+        printk("task 2 ");
+        sleep(2000);
+        switch_to_task(current_task_TCB->next);
+    }
+}
+
 extern uint8_t __bss_start;
 extern uint8_t __end;
 extern uint8_t phys;
@@ -31,7 +47,10 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
         deinitialize_region(MEMMAP_AREA, (total_mem / BLOCK_SIZE) / BLOCKS_PER_BYTE);
         if (Page_Manager_Init()) printk("Paging enabled\n");
         HAL_Init();
-        DrawRect();
+        Multitasking_Init();
+        create_kernel_task(task1);
+        create_kernel_task(task2);
+        switch_to_task(current_task_TCB->next);
         // // test page fault
         // volatile uint32_t* poop = (uint32_t*)0xDEADBEEF;
         // printk("Gonna write to poop and cause a page fault\n");
@@ -48,7 +67,6 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
 
     // now entering the realm of the kernel main loop...
     // uint32_t last_ticks = 0;
-    // // print_mem();            // whenever some memory change happens, we'll call this...
     // printk("Type 'help' to get started!\n");
     // while (true) {
     //     uint32_t ticks = get_ticks();
@@ -63,5 +81,9 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
     // crash_me();
 
     end:
-        for (;;);
+        while (1) {
+            printk("kernel main ");
+            sleep(2000);
+            switch_to_task(current_task_TCB->next);
+        }
 }

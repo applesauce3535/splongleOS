@@ -69,6 +69,21 @@ i686_ReadCR2:
     mov eax, cr2
     ret
 
+global i686_ReadCR3
+i686_ReadCR3:
+    mov eax, cr3
+    ret
+
+global i686_ReadESP
+i686_ReadESP:
+    mov eax, esp
+    ret
+
+global i686_ReadEBP
+i686_ReadEBP:
+    mov eax, ebp
+    ret
+
 global i686_panic
 i686_panic:
     cli

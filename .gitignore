@@ -5,6 +5,5 @@ Toolchain/
 /legacy
 /run/run_img.sh
 /iso
-/src/graphics_sandbox
 /src/kernel/memory/kmalloc*
 /src/kernel/dev/mouse*

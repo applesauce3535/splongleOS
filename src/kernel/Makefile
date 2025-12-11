@@ -1,9 +1,9 @@
 TARGET_ASMFLAGS += -f elf
 TARGET_CFLAGS += -ffreestanding -nostdlib -I. 
 TARGET_LIBS += -lgcc
-TARGET_LINKFLAGS += -T linker.ld -nostdlib
+TARGET_LINKFLAGS += -T link.ld -nostdlib
 
-ELF_LINKFLAGS = -T linker_elf.ld -nostdlib
+ELF_LINKFLAGS = -T link.ld -nostdlib
 
 HEADERS_C = $(wildcard *.h) \
             $(wildcard */*.h) \

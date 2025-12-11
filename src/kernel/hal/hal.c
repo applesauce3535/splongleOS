@@ -19,8 +19,7 @@ void HAL_Init() {
     // printk("Keyboard initialized\n");
     RTC_Init();
     enable_RTC();
-    // Mouse_Init();
-    // printk("Mouse initialized\n");
+    
     SelectDrivers(&g_Manager);
     
     // primary master/primary slave
@@ -36,13 +35,15 @@ void HAL_Init() {
     if (ata1m.initialized) printk("Master ATA2 initialized\n");
     AdvancedTechnologyAttachment ata1s = ATA_Init(0x170, false);
     if (ata1s.initialized) printk("Slave ATA2 initialized\n");
-
+    // IDK WHY THE MOUSE DOESNT WORK
+    // if (Mouse_Init()) printk("Mouse initialized\n");
     /*
     for more ATAs:
     third: starts at 0x1E8
     fourth: starts at 0x168
     */
-   clrscr();
-   printk("Preparing switch to graphics mode! (320x200, 8)\n");
-   VGA_Init();
+//    printk("Preparing switch to graphics mode! (320x200, 8)\n");
+//    sleep(5000);
+//    clrscr();
+//    VGA_Init();
 }

@@ -12,4 +12,5 @@
 #include "i8254.h"
 #include "keyboard.h"
 #include "shell.h"
+#include "sched.h"
 #include "multiboot.h"

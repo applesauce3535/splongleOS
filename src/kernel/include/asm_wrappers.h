@@ -24,3 +24,6 @@ void ASMCALL i686_ChangePD(uint32_t pd);
 void ASMCALL i686_EnablePaging();
 
 uint32_t ASMCALL i686_ReadCR2();
+uint32_t ASMCALL i686_ReadCR3();
+uint32_t ASMCALL i686_ReadESP();
+uint32_t ASMCALL i686_ReadEBP();

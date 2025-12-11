@@ -17,6 +17,7 @@ bool VGA_Init() {
     g_VGA.attribute_reset_port = 0x3DA;
 
     if (SetMode(320, 200, 8)) return true;
+    else return false;
 }
 
 bool SetMode(uint32_t width, uint32_t height, uint32_t colordepth) {
