@@ -5,7 +5,8 @@ void Shell_Run() {
     int pos = 0;
     printk("$>");
     while (true) {
-        if (keyboard_haschar()) {
+        if (!keyboard_haschar()) yield();
+        else {
             char c = keyboard_getchar();
 
             if (c == '\n') {

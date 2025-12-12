@@ -73,7 +73,7 @@ uint64_t measure_cpu_freq() {
     i686_EnableInts();
 
     while (ticks < wait_for)
-        ;  // spin wait
+        yield();
 
     i686_DisableInts();
     end_tsc = rdtsc();
@@ -87,17 +87,19 @@ uint64_t measure_cpu_freq() {
 }
 
 void print_CPU() {
-    int X = getX();
-    int Y = getY();
-    setX(57);
-    setY(0);
-    setcursor(57, 0);
-    uint64_t cpu_freq = measure_cpu_freq();
-    printk("CPU Frequency: %llu MHz\n", cpu_freq / 1000000);
-    // restore cursor position
-    setX(X);
-    setY(Y);
-    setcursor(X, Y);
+    while(1) {
+        int X = getX();
+        int Y = getY();
+        setX(57);
+        setY(0);
+        setcursor(57, 0);
+        uint64_t cpu_freq = measure_cpu_freq();
+        printk("CPU Frequency: %llu MHz\n", cpu_freq / 1000000);
+        // restore cursor position
+        setX(X);
+        setY(Y);
+        setcursor(X, Y);
+    }
 }
 
 uint32_t get_ticks() {
@@ -107,6 +109,7 @@ uint32_t get_ticks() {
 // channel 0 handler
 void PIT_Handler(Registers* regs) {
     ++ticks;
+    if (ticks % 10 == 0) Schedule();
 }
 
 void sleep(uint32_t ms) {

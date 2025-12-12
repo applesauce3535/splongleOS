@@ -2,22 +2,6 @@
 
 void crash_me();
 
-void task1() {
-    while(1) { 
-        printk("task 1 ");
-        sleep(2000);
-        switch_to_task(current_task_TCB->next);
-    }
-}
-
-void task2() {
-    while(1) { 
-        printk("task 2 ");
-        sleep(2000);
-        switch_to_task(current_task_TCB->next);
-    }
-}
-
 extern uint8_t __bss_start;
 extern uint8_t __end;
 extern uint8_t phys;
@@ -30,6 +14,22 @@ void DrawRect() {
     }
 }
 
+void task1() {
+    while(1) {
+        printk("task1 ");
+        sleep(1000);
+        Schedule();
+    }
+}
+
+void task2() {
+    while(1) {
+        printk("task2 ");
+        sleep(1000);
+        Schedule();
+    }
+}
+
 void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
     clrscr();
     printk("\n");
@@ -39,51 +39,41 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
     // printk("Done\n");
     if (magic == MULTIBOOT_BOOTLOADER_MAGIC) {
         printk("Booted by Multiboot (magic ok)\n");
-        uint64_t total_mem = get_total_mem(mbinfo);
-        Memory_Manager_Init(MEMMAP_AREA, total_mem);
-        set_type1(mbinfo);
-        // set certain regions for kernel and mmap as used
-        deinitialize_region(0x00100000, 0x00200000);
-        deinitialize_region(MEMMAP_AREA, (total_mem / BLOCK_SIZE) / BLOCKS_PER_BYTE);
-        if (Page_Manager_Init()) printk("Paging enabled\n");
-        HAL_Init();
-        Multitasking_Init();
-        create_kernel_task(task1);
-        create_kernel_task(task2);
-        switch_to_task(current_task_TCB->next);
-        // // test page fault
-        // volatile uint32_t* poop = (uint32_t*)0xDEADBEEF;
-        // printk("Gonna write to poop and cause a page fault\n");
-        // // printk("%d\n", *poop);      // kernel read PF
-        // // printk("Just printed variable after page faulting it\n");
-        // *poop = 1234;               // kernel write PF
-        // printk("Just wrote to poop after page faulting it\n");
-        // printk("Hello world from splongleOS\n");
-    } 
+    }
     else {
         // something went wrong, display incorrect multiboot magic number
         printk("Not booted by Multiboot: magic=0x%x\n", magic);
     }
 
-    // now entering the realm of the kernel main loop...
-    // uint32_t last_ticks = 0;
+    uint64_t total_mem = get_total_mem(mbinfo);
+    Memory_Manager_Init(MEMMAP_AREA, total_mem);
+    set_type1(mbinfo);
+    // set certain regions for kernel and mmap as used
+    deinitialize_region(0x00100000, 0x00200000);
+    deinitialize_region(MEMMAP_AREA, (total_mem / BLOCK_SIZE) / BLOCKS_PER_BYTE);
+    if (Page_Manager_Init()) printk("Paging enabled\n");
+    HAL_Init();
+    Multitasking_Init();
+    // // test page fault
+    // volatile uint32_t* poop = (uint32_t*)0xDEADBEEF;
+    // printk("Gonna write to poop and cause a page fault\n");
+    // // printk("%d\n", *poop);      // kernel read PF
+    // // printk("Just printed variable after page faulting it\n");
+    // *poop = 1234;               // kernel write PF
+    // printk("Just wrote to poop after page faulting it\n");
+    printk("Hello world from splongleOS\n");
+
+
+
     // printk("Type 'help' to get started!\n");
-    // while (true) {
-    //     uint32_t ticks = get_ticks();
-    //     if (ticks - last_ticks >= 250) {
-    //         last_ticks = ticks;
-    //         print_CPU();
-    //     }
-    //     Shell_Run();    // because there's no scheduler yet, this will be the only thing running
-    // }
+    create_kernel_task(Shell_Run);
+    // create_kernel_task(task1);
+    // create_kernel_task(task2);
     
 
     // crash_me();
 
-    end:
-        while (1) {
-            printk("kernel main ");
-            sleep(2000);
-            switch_to_task(current_task_TCB->next);
-        }
+    while (1) {
+        Schedule();
+    }
 }

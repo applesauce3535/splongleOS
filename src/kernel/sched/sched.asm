@@ -58,4 +58,5 @@ switch_to_task:
     pop ebx
 
     sti
-    ret                           ;Load next task's EIP from its kernel stack
+    ret                           ; Load next task's EIP from its kernel stack, this will be at the top of the stack
+                                  ; when this function returns

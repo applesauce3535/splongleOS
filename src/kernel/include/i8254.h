@@ -7,6 +7,7 @@
 #include "asm_wrappers.h"
 #include "isr.h"
 #include "irq.h"
+#include "sched.h"
 
 
 void PIT_Init();
