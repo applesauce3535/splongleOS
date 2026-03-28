@@ -16,6 +16,14 @@ i686_inb:
     in al, dx
     ret
 
+global i686_inw
+i686_inw:
+    [bits 32]
+    mov dx, [esp + 4]
+    xor eax, eax 
+    in ax, dx    
+    ret
+
 global i686_outl
 i686_outl:
     [bits 32]

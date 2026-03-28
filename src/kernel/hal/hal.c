@@ -28,7 +28,6 @@ void HAL_Init() {
     if (ata0m.initialized) printk("Master ATA1 initialized\n");
     AdvancedTechnologyAttachment ata0s = ATA_Init(0x1F0, false);
     if (ata0s.initialized) printk("Slave ATA1 initialized\n");
-
     // secondary master/secondary slave
     // use interrupt 15
     AdvancedTechnologyAttachment ata1m = ATA_Init(0x170, true);

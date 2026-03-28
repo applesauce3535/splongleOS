@@ -15,19 +15,19 @@ void DrawRect() {
 }
 
 void task1() {
-    while(1) {
+
         printk("task1 ");
         sleep(1000);
         Schedule();
-    }
+    
 }
 
 void task2() {
-    while(1) {
+
         printk("task2 ");
         sleep(1000);
         Schedule();
-    }
+    
 }
 
 void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
@@ -57,16 +57,17 @@ void kernel_main(uint32_t magic, multiboot_info_t* mbinfo) {
     // // test page fault
     // volatile uint32_t* poop = (uint32_t*)0xDEADBEEF;
     // printk("Gonna write to poop and cause a page fault\n");
-    // // printk("%d\n", *poop);      // kernel read PF
+    // printk("%d\n", *poop);      // kernel read PF
     // // printk("Just printed variable after page faulting it\n");
     // *poop = 1234;               // kernel write PF
     // printk("Just wrote to poop after page faulting it\n");
-    printk("Hello world from splongleOS\n");
+    // printk("Hello world from splongleOS\n");
 
 
 
+    // DrawRect();
     // printk("Type 'help' to get started!\n");
-    create_kernel_task(Shell_Run);
+    // // create_kernel_task(Shell_Run);
     // create_kernel_task(task1);
     // create_kernel_task(task2);
     

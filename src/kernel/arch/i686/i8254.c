@@ -109,7 +109,7 @@ uint32_t get_ticks() {
 // channel 0 handler
 void PIT_Handler(Registers* regs) {
     ++ticks;
-    if (ticks % 10 == 0) Schedule();
+    // if (ticks % 10 == 0) Schedule();
 }
 
 void sleep(uint32_t ms) {

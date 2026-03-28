@@ -5,8 +5,4 @@ qemu-system-i386 \
   -audiodev id=pa,driver=pa \
   -machine pcspk-audiodev=pa \
   -boot d \
-  -device piix4-ide,id=ide \
-  -drive file=run/disk.img,if=none,id=d0 \
-  -device ide-hd,drive=d0,bus=ide.0 \
-  -drive file=build/splongleOS.iso,media=cdrom,if=none,id=cd0 \
-  -device ide-cd,drive=cd0,bus=ide.1
+  -drive file=build/splongleOS.iso,media=cdrom,if=ide
