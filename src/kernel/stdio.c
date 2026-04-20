@@ -25,21 +25,7 @@ const unsigned SCREEN_HEIGHT = 25;
 high bits background
 low bits text
 */
-const uint8_t DEFAULT_COLOR = 0x03;
-
-volatile bool vga_lock = false;
-
-void vga_acquire() {
-    i686_DisableInts();   // prevent preemption during lock ops
-    while (vga_lock)
-        ;                 // spin until unlocked
-    vga_lock = true;
-    i686_EnableInts();
-}
-
-void vga_release() {
-    vga_lock = false;
-}
+uint8_t DEFAULT_COLOR = 0x0F;
 
 uint8_t* g_ScreenBuffer = (uint8_t*)0xB8000;
 int g_ScreenX= 0, g_ScreenY = 0;
@@ -74,6 +60,14 @@ void setX(int x) {
 
 void setY(int y) {
     g_ScreenY = y;
+}
+
+void change_color(uint8_t color) {
+    DEFAULT_COLOR = color;
+}
+
+void default_color() {
+    DEFAULT_COLOR = 0x0F;
 }
 
 /*

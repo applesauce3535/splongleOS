@@ -62,45 +62,6 @@ static inline uint64_t rdtsc(void) {
     return ((uint64_t)hi << 32) | lo;
 }
 
-uint64_t measure_cpu_freq() {
-    uint64_t start_tsc, end_tsc;
-    uint32_t start_ticks = ticks;
-
-    // wait for a new PIT tick
-    uint32_t wait_for = start_ticks + 10;  // wait 10 PIT ticks = ~100ms
-    i686_DisableInts();
-    start_tsc = rdtsc();
-    i686_EnableInts();
-
-    while (ticks < wait_for)
-        yield();
-
-    i686_DisableInts();
-    end_tsc = rdtsc();
-    i686_EnableInts();
-
-    uint64_t tsc_delta = end_tsc - start_tsc;
-    double seconds = 10.0 / 100.0;  // 10 ticks at 100Hz = 0.1s
-    double cpu_freq_hz = (double)tsc_delta / seconds;
-
-    return (uint64_t)cpu_freq_hz;
-}
-
-void print_CPU() {
-    while(1) {
-        int X = getX();
-        int Y = getY();
-        setX(57);
-        setY(0);
-        setcursor(57, 0);
-        uint64_t cpu_freq = measure_cpu_freq();
-        printk("CPU Frequency: %llu MHz\n", cpu_freq / 1000000);
-        // restore cursor position
-        setX(X);
-        setY(Y);
-        setcursor(X, Y);
-    }
-}
 
 uint32_t get_ticks() {
     return ticks;

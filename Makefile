@@ -7,43 +7,48 @@ all: iso hdd
 #
 # ISO
 #
-iso: $(BUILD_DIR)/splongleOS.iso
+iso: $(BUILD_DIR)/SplongleOS.iso
 
-$(BUILD_DIR)/splongleOS.iso: kernel_elf
+$(BUILD_DIR)/SplongleOS.iso: kernel_elf
 	rm -rf iso
 	mkdir -p iso/boot/grub
 	if [ -f $(BUILD_DIR)/kernel.elf ]; then \
 		cp $(BUILD_DIR)/kernel.elf iso/boot/kernel.elf; \
-		printf '%s\n' 'menuentry "splongleOS" {' '  multiboot /boot/kernel.elf' '  boot' '}' > iso/boot/grub/grub.cfg; \
+		printf '%s\n' 'menuentry "SplongleOS" {' '  multiboot /boot/kernel.elf' '  boot' '}' > iso/boot/grub/grub.cfg; \
 	fi
-	grub-mkrescue -o $(BUILD_DIR)/splongleOS.iso iso || (echo "grub-mkrescue failed - ensure grub and xorriso are installed"; false)
+	grub-mkrescue -o $(BUILD_DIR)/SplongleOS.iso iso || (echo "grub-mkrescue failed - ensure grub and xorriso are installed"; false)
 
 #
 # Hard drive image
 #
-hdd: $(BUILD_DIR)/splongleOS_hdd.img
+hdd: $(BUILD_DIR)/SplongleOS_hdd.img
 
-$(BUILD_DIR)/splongleOS_hdd.img: kernel_elf
-# make blank 64MB disk
+$(BUILD_DIR)/SplongleOS_hdd.img: kernel_elf
+	@echo "Creating blank 64MB disk image..."
 	dd if=/dev/zero of=$@ bs=1M count=64
-# setup loop device
-	LOOPDEV=$(sudo losetup -f)
-	sudo losetup $LOOPDEV $@
-	sudo mkfs.ext2 $$LOOPDEV
-# mount kernel and copy to GRUB
-	mkdir -p mnt
-	sudo mount $$LOOPDEV mnt
-	sudo mkdir -p mnt/boot/grub
-	sudo cp $(BUILD_DIR)/kernel.elf mnt/boot/kernel.elf
-	echo 'menuentry "splongleOS" {' | sudo tee mnt/boot/grub/grub.cfg
-	echo '  multiboot /boot/kernel.elf' | sudo tee -a mnt/boot/grub/grub.cfg
-	echo '  boot' | sudo tee -a mnt/boot/grub/grub.cfg
-	echo '}' | sudo tee -a mnt/boot/grub/grub.cfg
-# install GRUB
-	sudo grub-install --target=i386-pc --boot-directory=mnt/boot --force $$LOOPDEV
-# cleanup
-	sudo umount mnt
-	sudo losetup -d $$LOOPDEV
+
+	@echo "Setting up loop device, partitioning, formatting, and installing kernel..."
+	bash -c '\
+	LOOPDEV=$$(sudo losetup -f --show $@) && \
+	echo "Using loop device: $$LOOPDEV" && \
+	sudo parted -s $$LOOPDEV mklabel msdos && \
+	sudo parted -s $$LOOPDEV mkpart primary ext2 1MiB 100% && \
+	sudo partprobe $$LOOPDEV && \
+	sudo mkfs.ext2 -F $${LOOPDEV}p1 && \
+	mkdir -p mnt && \
+	sudo mount $${LOOPDEV}p1 mnt && \
+	sudo mkdir -p mnt/boot/grub && \
+	sudo cp $(BUILD_DIR)/kernel.elf mnt/boot/kernel.elf && \
+	echo "menuentry \"SplongleOS\" {" | sudo tee mnt/boot/grub/grub.cfg > /dev/null && \
+	echo "  multiboot /boot/kernel.elf" | sudo tee -a mnt/boot/grub/grub.cfg > /dev/null && \
+	echo "  boot" | sudo tee -a mnt/boot/grub/grub.cfg > /dev/null && \
+	echo "}" | sudo tee -a mnt/boot/grub/grub.cfg > /dev/null && \
+	sudo grub-install --target=i386-pc --boot-directory=mnt/boot --force $$LOOPDEV && \
+	sudo umount mnt && \
+	sudo losetup -d $$LOOPDEV \
+	'
+
+	@echo "SplongleOS HDD image created at $@"
 
 #
 # kernel

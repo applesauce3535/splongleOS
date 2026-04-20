@@ -1,4 +1,3 @@
-; these are just a wrapper for reading and writing to ports
 
 global i686_outb
 i686_outb:
@@ -14,6 +13,14 @@ i686_inb:
     mov dx, [esp + 4]
     xor eax, eax
     in al, dx
+    ret
+
+global i686_outw
+i686_outw:
+    [bits 32]
+    mov dx, [esp + 4]
+    mov ax, [esp + 8]
+    out dx, ax
     ret
 
 global i686_inw
@@ -104,3 +111,7 @@ crash_me:
     mov ebx, 2
     div ebx
     ret
+
+global i686_Halt
+i686_Halt:
+    hlt

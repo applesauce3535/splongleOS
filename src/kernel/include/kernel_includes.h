@@ -14,3 +14,4 @@
 #include "shell.h"
 #include "sched.h"
 #include "multiboot.h"
+#include "ata.h"

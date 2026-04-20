@@ -3,9 +3,9 @@ export PATH := $(TOOLCHAIN_PREFIX)/bin:$(PATH)
 
 toolchain: toolchain_binutils toolchain_gcc
 
-BINUTILS_SRC = toolchain/binutils-2.44
+BINUTILS_SRC = toolchain/binutils-2.46
 BINUTILS_BUILD = toolchain/binutils-build
-GCC_SRC = toolchain/gcc-15.1.0
+GCC_SRC = toolchain/gcc-15.2.0
 GCC_BUILD = toolchain/gcc-build
 
 toolchain_binutils: toolchain/binutils-$(BINUTILS_VERSION).tar.xz

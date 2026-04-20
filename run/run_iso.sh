@@ -5,4 +5,7 @@ qemu-system-i386 \
   -audiodev id=pa,driver=pa \
   -machine pcspk-audiodev=pa \
   -boot d \
-  -drive file=build/splongleOS.iso,media=cdrom,if=ide
+  -drive file=build/SplongleOS.iso,media=cdrom,if=ide,index=1 \
+  -drive file=build/SplongleOS_hdd.img,format=raw,if=ide,index=0 \
+  -d int \
+  -D run/log/qemu_logs.txt

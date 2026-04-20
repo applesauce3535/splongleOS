@@ -5,7 +5,11 @@ void Shell_Run() {
     int pos = 0;
     printk("$>");
     while (true) {
-        if (!keyboard_haschar()) yield();
+        if (!keyboard_haschar()) {
+            lock_scheduler();
+            Schedule();
+            unlock_scheduler();
+        }
         else {
             char c = keyboard_getchar();
 
@@ -31,7 +35,7 @@ void Shell_Run() {
 void send_command(const char* cmd) {
     if (strcmp(cmd, "help please") || strcmp(cmd, "please help")) {
         printk("\ngetmem - display physical memory information \
-                \nversion - display splongleOS version \
+                \nversion - display SplongleOS version \
                 \nwhoami - display who you are \
                 \ndatetime - toggle the date and time on screen \
                 \nlspci - list PCI devices \
@@ -46,7 +50,7 @@ void send_command(const char* cmd) {
         printk("\n");
     }
     else if (strcmp(cmd, "version")) {
-        printk("\nsplongleOS V 35\n");
+        printk("\nSplongleOS V 35\n");
     }
     else if (strcmp(cmd, "whoami")) {
         printk("\nsplongle\n");
